@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Naayak | Role Login</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <main class="app-shell">
+        <div class="mobile-frame">
+            <header class="top-header">
+                <p class="top-header-kicker">Civic Tech Platform</p>
+                <h1 class="brand-title">Naayak</h1>
+                <p class="brand-subtitle">Your voice to the government</p>
+            </header>
+
+            <section class="hero-card">
+                <div class="eyebrow">Role Access</div>
+                <div class="hero-row">
+                    <div>
+                        <h2>One platform for citizens, officers, and administrators</h2>
+                        <p>Use the role selector below to enter the correct workflow for complaint filing, department action, or platform oversight.</p>
+                    </div>
+                    <div class="seal-mark">Gov</div>
+                </div>
+                <div class="hero-badges">
+                    <span class="badge badge-green">Citizen Filing</span>
+                    <span class="badge badge-yellow">Officer Action</span>
+                    <span class="badge badge-red">Admin Control</span>
+                </div>
+            </section>
+
+            <section class="card section-card">
+                <div class="section-head">
+                    <div>
+                        <p class="section-kicker">Login Portal</p>
+                        <h2>Select your role</h2>
+                    </div>
+                    <span class="section-tag">Demo Auth</span>
+                </div>
+
+                <div class="role-selector">
+                    <button type="button" id="citizenRoleBtn" class="role-card active-role" onclick="selectRole('citizen')">
+                        <strong>Citizen</strong>
+                        <span>Phone + OTP login</span>
+                    </button>
+                    <button type="button" id="adhikariRoleBtn" class="role-card" onclick="selectRole('adhikari')">
+                        <strong>Adhikari</strong>
+                        <span>Department officer access</span>
+                    </button>
+                    <button type="button" id="adminRoleBtn" class="role-card" onclick="selectRole('admin')">
+                        <strong>Admin</strong>
+                        <span>Platform analytics and management</span>
+                    </button>
+                </div>
+            </section>
+
+            <section id="citizenLogin" class="card section-card screen-panel active-screen">
+                <div class="section-head">
+                    <div>
+                        <p class="section-kicker">Citizen Login</p>
+                        <h2>Verify with mobile OTP</h2>
+                    </div>
+                    <span class="section-tag">Role 1</span>
+                </div>
+
+                <label class="field-label" for="citizenPhone">Mobile number</label>
+                <input type="tel" id="citizenPhone" placeholder="Enter 10 digit mobile number" maxlength="10">
+
+                <button class="btn btn-primary" type="button" onclick="sendCitizenOTP()">Send OTP</button>
+
+                <div id="citizenOtpBox" class="otp-panel hidden">
+                    <label class="field-label" for="citizenOtp">Verification code</label>
+                    <input type="text" id="citizenOtp" placeholder="Use 123456 for demo" maxlength="6">
+                    <button class="btn btn-primary" type="button" onclick="loginCitizen()">Continue as Citizen</button>
+                </div>
+            </section>
+
+            <section id="adhikariLogin" class="card section-card screen-panel hidden">
+                <div class="section-head">
+                    <div>
+                        <p class="section-kicker">Adhikari Login</p>
+                        <h2>Department officer access</h2>
+                    </div>
+                    <span class="section-tag">Role 2</span>
+                </div>
+
+                <div class="credential-card">
+                    <strong>Demo credentials</strong>
+                    <p>Email: `roads.officer@gov.in`</p>
+                    <p>Password: `adhikari123`</p>
+                </div>
+
+                <label class="field-label" for="adhikariEmail">Official email</label>
+                <input type="email" id="adhikariEmail" placeholder="Enter officer email">
+
+                <label class="field-label" for="adhikariPassword">Password</label>
+                <input type="password" id="adhikariPassword" placeholder="Enter password">
+
+                <button class="btn btn-primary" type="button" onclick="loginAdhikari()">Continue as Adhikari</button>
+            </section>
+
+            <section id="adminLogin" class="card section-card screen-panel hidden">
+                <div class="section-head">
+                    <div>
+                        <p class="section-kicker">Admin Login</p>
+                        <h2>Platform administration access</h2>
+                    </div>
+                    <span class="section-tag">Role 3</span>
+                </div>
+
+                <div class="credential-card">
+                    <strong>Demo credentials</strong>
+                    <p>Email: `admin@naayak.gov.in`</p>
+                    <p>Password: `admin123`</p>
+                </div>
+
+                <label class="field-label" for="adminEmail">Admin email</label>
+                <input type="email" id="adminEmail" placeholder="Enter admin email">
+
+                <label class="field-label" for="adminPassword">Password</label>
+                <input type="password" id="adminPassword" placeholder="Enter password">
+
+                <button class="btn btn-primary" type="button" onclick="loginAdmin()">Continue as Admin</button>
+            </section>
+        </div>
+    </main>
+
+    <script src="script.js"></script>
+</body>
+</html>

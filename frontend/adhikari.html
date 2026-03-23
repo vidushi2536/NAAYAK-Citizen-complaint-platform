@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Naayak | Adhikari Dashboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <main class="dashboard-shell">
+        <aside class="side-panel">
+            <div class="side-brand">
+                <p class="top-header-kicker">Adhikari Panel</p>
+                <h1 class="brand-title brand-title-left">Naayak</h1>
+                <p class="brand-subtitle">Department complaint operations</p>
+            </div>
+            <nav class="side-nav">
+                <a class="side-link active-link" href="adhikari.html">Assigned Complaints</a>
+                <a class="side-link" href="admin.html">Admin View</a>
+                <a class="side-link" href="citizen.html">Citizen Portal</a>
+                <a class="side-link" href="index.html">Logout</a>
+            </nav>
+            <div class="credential-card">
+                <strong>Assigned department</strong>
+                <p id="officerDepartmentLabel">Roads Department</p>
+            </div>
+        </aside>
+
+        <section class="dashboard-main">
+            <section class="hero-card">
+                <div class="eyebrow">Officer Workflow</div>
+                <div class="hero-row">
+                    <div>
+                        <h2>Complaints assigned to your department</h2>
+                        <p>Review urgency, update field status, and monitor category patterns from one officer-friendly dashboard.</p>
+                    </div>
+                    <div class="seal-mark"></div>
+                </div>
+                <div class="hero-badges">
+                    <span class="badge badge-yellow">Status control</span>
+                    <span class="badge badge-red">Priority view</span>
+                </div>
+            </section>
+
+            <section class="kpi-grid">
+                <article class="card kpi-card">
+                    <span class="kpi-label">Total Complaints</span>
+                    <strong id="totalComplaintsStat">0</strong>
+                    <p>Assigned to the visible department scope</p>
+                </article>
+                <article class="card kpi-card">
+                    <span class="kpi-label">High Urgency</span>
+                    <strong id="highUrgencyStat">0</strong>
+                    <p>Needs immediate attention</p>
+                </article>
+                <article class="card kpi-card">
+                    <span class="kpi-label">In Progress</span>
+                    <strong id="inProgressStat">0</strong>
+                    <p>Currently under officer action</p>
+                </article>
+                <article class="card kpi-card">
+                    <span class="kpi-label">Resolved</span>
+                    <strong id="resolvedStat">0</strong>
+                    <p>Closed after response</p>
+                </article>
+            </section>
+
+            <section class="dashboard-grid">
+                <section class="card section-card">
+                    <div class="section-head">
+                        <div>
+                            <p class="section-kicker">Filter</p>
+                            <h2>Department filter</h2>
+                        </div>
+                        <span class="section-tag">Officer</span>
+                    </div>
+                    <label class="field-label" for="departmentFilter">Assigned department</label>
+                    <select id="departmentFilter">
+                        <option value="All">All Departments</option>
+                    </select>
+                </section>
+
+                <section class="card section-card">
+                    <div class="section-head">
+                        <div>
+                            <p class="section-kicker">Analytics</p>
+                            <h2>Complaints by category</h2>
+                        </div>
+                    </div>
+                    <div class="chart-panel">
+                        <canvas id="complaintCategoryBarChart" height="240"></canvas>
+                    </div>
+                </section>
+            </section>
+
+            <section class="table-card">
+                <div class="table-toolbar">
+                    <div class="table-title-row">
+                        <div>
+                            <p class="table-label">Assigned Queue</p>
+                            <h2>Department complaints</h2>
+                        </div>
+                        <span id="tableCount" class="table-chip">0 complaints</span>
+                    </div>
+                </div>
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Ticket ID</th>
+                                <th>Summary</th>
+                                <th>Urgency</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="officerTableBody"></tbody>
+                    </table>
+                </div>
+            </section>
+        </section>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>

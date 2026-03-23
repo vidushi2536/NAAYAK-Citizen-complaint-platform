@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Naayak | Admin Dashboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <main class="dashboard-shell">
+        <aside class="side-panel">
+            <div class="side-brand">
+                <p class="top-header-kicker">Admin Panel</p>
+                <h1 class="brand-title brand-title-left">Naayak</h1>
+                <p class="brand-subtitle">Platform analytics and governance</p>
+            </div>
+            <nav class="side-nav">
+                <a class="side-link" href="adhikari.html">Officer View</a>
+                <a class="side-link active-link" href="admin.html">Admin Dashboard</a>
+                <a class="side-link" href="citizen.html">Citizen Portal</a>
+                <a class="side-link" href="index.html">Logout</a>
+            </nav>
+            <div class="credential-card">
+                <strong>Admin tools</strong>
+                <p>Departments, officers, and analytics are loaded with backend-first fallback support.</p>
+            </div>
+        </aside>
+
+        <section class="dashboard-main">
+            <section class="hero-card">
+                <div class="eyebrow">Administrator View</div>
+                <div class="hero-row">
+                    <div>
+                        <h2>Complete complaint management platform</h2>
+                        <p>View all complaints, track urgency distribution, and manage departments and officers from a single admin workspace.</p>
+                    </div>
+                    <div class="seal-mark">Admin</div>
+                </div>
+                <div class="hero-badges">
+                    <span class="badge badge-yellow">Analytics</span>
+                    <span class="badge badge-red">Global control</span>
+                </div>
+            </section>
+
+            <section class="kpi-grid">
+                <article class="card kpi-card">
+                    <span class="kpi-label">Total Complaints</span>
+                    <strong id="totalComplaintsStat">0</strong>
+                    <p>Across all departments</p>
+                </article>
+                <article class="card kpi-card">
+                    <span class="kpi-label">High Urgency</span>
+                    <strong id="highUrgencyStat">0</strong>
+                    <p>Critical complaint volume</p>
+                </article>
+                <article class="card kpi-card">
+                    <span class="kpi-label">Resolved</span>
+                    <strong id="resolvedStat">0</strong>
+                    <p>Successfully closed tickets</p>
+                </article>
+                <article class="card kpi-card">
+                    <span class="kpi-label">Pending</span>
+                    <strong id="pendingStat">0</strong>
+                    <p>Awaiting assignment or action</p>
+                </article>
+            </section>
+
+            <section class="dashboard-grid">
+                <section class="card section-card">
+                    <div class="section-head">
+                        <div>
+                            <p class="section-kicker">Analytics</p>
+                            <h2>Complaints by category</h2>
+                        </div>
+                    </div>
+                    <div class="chart-panel">
+                        <canvas id="complaintCategoryBarChart" height="240"></canvas>
+                    </div>
+                </section>
+
+                <section class="card section-card">
+                    <div class="section-head">
+                        <div>
+                            <p class="section-kicker">Controls</p>
+                            <h2>Platform management</h2>
+                        </div>
+                    </div>
+                    <div class="management-list">
+                        <article class="management-item">
+                            <strong>Departments</strong>
+                            <p>Roads, Water, Electricity, Sanitation, Municipal Corporation</p>
+                        </article>
+                        <article class="management-item">
+                            <strong>Officers</strong>
+                            <p>8 active officers across district and ward operations</p>
+                        </article>
+                        <article class="management-item">
+                            <strong>Escalation policy</strong>
+                            <p>High urgency complaints escalate to state review within 30 minutes</p>
+                        </article>
+                    </div>
+                </section>
+            </section>
+
+            <section class="table-card">
+                <div class="table-toolbar">
+                    <div class="table-title-row">
+                        <div>
+                            <p class="table-label">Admin Queue</p>
+                            <h2>All complaints</h2>
+                        </div>
+                        <span id="tableCount" class="table-chip">0 complaints</span>
+                    </div>
+                </div>
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Ticket ID</th>
+                                <th>Summary</th>
+                                <th>Category</th>
+                                <th>Urgency</th>
+                                <th>Department</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="adminTableBody"></tbody>
+                    </table>
+                </div>
+            </section>
+        </section>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>

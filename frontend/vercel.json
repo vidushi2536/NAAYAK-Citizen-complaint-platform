@@ -1,0 +1,9 @@
+{
+  "routes": [
+    { "src": "/", "dest": "/index.html" },
+    { "src": "/citizen", "dest": "/citizen.html" },
+    { "src": "/adhikari", "dest": "/adhikari.html" },
+    { "src": "/admin", "dest": "/admin.html" },
+    { "src": "/dashboard", "dest": "/adhikari.html" }
+  ]
+}

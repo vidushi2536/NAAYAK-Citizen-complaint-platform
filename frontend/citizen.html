@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Naayak | Citizen Services</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <main class="app-shell">
+        <div class="mobile-frame">
+            <header class="top-header">
+                <p class="top-header-kicker">Citizen Portal</p>
+                <h1 class="brand-title">Naayak</h1>
+                <p class="brand-subtitle">File, route, and track civic complaints</p>
+            </header>
+
+            <section class="hero-card">
+                <div class="eyebrow">Citizen Services</div>
+                <div class="hero-row">
+                    <div>
+                        <h2>Register complaint in minutes</h2>
+                        <p>Choose a language, speak or type your issue, and let Naayak prepare the complaint routing and draft email automatically.</p>
+                    </div>
+                    <div class="seal-mark">24x7</div>
+                </div>
+                <div class="hero-badges">
+                    <span class="badge badge-green">AI triage</span>
+                    <span class="badge badge-yellow">Voice input</span>
+                    <span class="badge badge-red">Ticket tracking</span>
+                </div>
+            </section>
+
+            <section id="complaintScreen" class="card section-card screen-panel active-screen">
+                <div class="section-head">
+                    <div>
+                        <p class="section-kicker">New Complaint</p>
+                        <h2>Describe the issue clearly</h2>
+                    </div>
+                    <span class="section-tag">Citizen Flow</span>
+                </div>
+
+                <div class="service-grid">
+                    <article class="service-tile">
+                        <span class="service-dot dot-green"></span>
+                        <strong>Water Supply</strong>
+                    </article>
+                    <article class="service-tile">
+                        <span class="service-dot dot-red"></span>
+                        <strong>Road Safety</strong>
+                    </article>
+                    <article class="service-tile">
+                        <span class="service-dot dot-yellow"></span>
+                        <strong>Sanitation</strong>
+                    </article>
+                </div>
+
+                <label class="field-label" for="complaintCategory">Category</label>
+                <select id="complaintCategory">
+                    <option value="Road & Infrastructure">Road & Infrastructure</option>
+                    <option value="Water & Drainage">Water & Drainage</option>
+                    <option value="Electricity">Electricity</option>
+                    <option value="Sanitation">Sanitation</option>
+                    <option value="Public Safety">Public Safety</option>
+                </select>
+
+                <label class="field-label" for="location">Location</label>
+                <input type="text" id="location" placeholder="Ward, area or landmark">
+
+                <label class="field-label" for="language">Complaint language</label>
+                <select id="language">
+                    <option>English</option>
+                    <option>Hindi</option>
+                    <option>Tamil</option>
+                    <option>Telugu</option>
+                    <option>Bengali</option>
+                    <option>Marathi</option>
+                </select>
+
+                <label class="field-label" for="complaintText">Complaint details</label>
+                <textarea id="complaintText" placeholder="Example: Streetlight has not worked for 5 days near the primary school, making the road unsafe at night."></textarea>
+
+                <div class="action-stack">
+                    <button class="btn btn-secondary" type="button" onclick="startVoiceMock()">Use voice input</button>
+                    <button class="btn btn-primary" type="button" onclick="submitComplaint()">Analyze and Submit</button>
+                </div>
+            </section>
+
+            <section id="loadingScreen" class="card section-card screen-panel hidden">
+                <div class="loading-card">
+                    <div class="spinner" aria-hidden="true"></div>
+                    <h2>Analyzing complaint using AI...</h2>
+                    <p>Please wait while Naayak prepares routing details for the correct department.</p>
+                </div>
+            </section>
+
+            <section id="resultScreen" class="card section-card screen-panel hidden">
+                <div class="section-head">
+                    <div>
+                        <p class="section-kicker">Complaint Summary</p>
+                        <h2>Ready for department routing</h2>
+                    </div>
+                    <span class="section-tag">AI Analysis</span>
+                </div>
+
+                <div class="result-grid">
+                    <article class="result-tile">
+                        <span class="result-label">Urgency</span>
+                        <strong id="urgency" class="status-pill status-pill-red">High</strong>
+                    </article>
+                    <article class="result-tile">
+                        <span class="result-label">Department</span>
+                        <strong id="department">Municipal Corporation</strong>
+                    </article>
+                    <article class="result-tile">
+                        <span class="result-label">Route to</span>
+                        <strong id="email">municipal@gov.in</strong>
+                    </article>
+                    <article class="result-tile">
+                        <span class="result-label">Ticket ID</span>
+                        <strong id="ticketId">Generated after send</strong>
+                    </article>
+                </div>
+
+                <div class="insight-panel">
+                    <h3>AI routing notes</h3>
+                    <p id="aiSummary">Complaint tagged as critical public infrastructure issue.</p>
+                </div>
+
+                <label class="field-label" for="draftEmail">Draft email</label>
+                <textarea id="draftEmail"></textarea>
+
+                <div class="action-stack">
+                    <button class="btn btn-primary" type="button" onclick="sendEmail()">Send and Generate Ticket</button>
+                    <button class="btn btn-secondary" type="button" onclick="showTrackingPanel()">Track Complaint</button>
+                </div>
+            </section>
+
+            <section id="trackingPanel" class="card section-card hidden">
+                <div class="section-head">
+                    <div>
+                        <p class="section-kicker">Ticket Tracking</p>
+                        <h2>Your complaint status</h2>
+                    </div>
+                    <span class="section-tag">Citizen View</span>
+                </div>
+                <div class="result-grid">
+                    <article class="result-tile">
+                        <span class="result-label">Ticket ID</span>
+                        <strong id="trackingTicketId">NAY-2024-00000</strong>
+                    </article>
+                    <article class="result-tile">
+                        <span class="result-label">Current Status</span>
+                        <strong id="trackingStatus" class="status-pill status-pill-yellow">Pending</strong>
+                    </article>
+                </div>
+                <div class="insight-panel">
+                    <h3>Current update</h3>
+                    <p id="trackingSummary">Your complaint is waiting for department acknowledgment.</p>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <script src="script.js"></script>
+</body>
+</html>
