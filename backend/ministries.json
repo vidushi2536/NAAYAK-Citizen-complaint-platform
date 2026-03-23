@@ -1,0 +1,119 @@
+{
+  "departments": [
+    {
+      "category": "Water",
+      "keywords": ["paani", "water", "pani", "jal", "supply", "pipeline", "leakage", "sewage", "naali", "drainage", "pani nahi", "water shortage", "pani band"],
+      "department": "Delhi Jal Board",
+      "email": "cgro@delhijalboard.nic.in",
+      "head": "Chief Grievance Redressal Officer",
+      "portal_url": "https://delhijalboard.nic.in/grievance",
+      "address": "Varunalaya Phase II, Karol Bagh, New Delhi - 110055",
+      "response_days": 7
+    },
+    {
+      "category": "Electricity",
+      "keywords": ["bijli", "electricity", "current", "light", "power", "voltage", "meter", "bill", "transformer", "wire", "bijli nahi", "power cut", "load shedding", "batti"],
+      "department": "BSES Rajdhani Power Limited",
+      "email": "customercare@bsesdelhi.com",
+      "head": "Consumer Grievance Officer",
+      "portal_url": "https://www.bsesdelhi.com/web/brpl/consumer-grievance",
+      "address": "BSES Bhawan, Nehru Place, New Delhi - 110019",
+      "response_days": 5,
+      "note": "For South and West Delhi. North and East Delhi complaints go to BSES Yamuna at customercare@bsesdelhi.com"
+    },
+    {
+      "category": "Roads",
+      "keywords": ["sadak", "road", "pothole", "khada", "gaddha", "footpath", "pavement", "divider", "traffic signal", "street light", "flyover", "underpass", "road repair", "road broken"],
+      "department": "Public Works Department Delhi",
+      "email": "pwd-delhi@nic.in",
+      "head": "Chief Engineer, PWD Delhi",
+      "portal_url": "https://pwd.delhi.gov.in/wps/portal/PWD/Homepage/Grievance",
+      "address": "PWD Headquarters, MSO Building, ITO, New Delhi - 110002",
+      "response_days": 10
+    },
+    {
+      "category": "Health",
+      "keywords": ["hospital", "doctor", "medicine", "dawai", "ambulance", "clinic", "health", "sehat", "bimari", "treatment", "nurse", "operation", "emergency", "dispensary", "mohalla clinic"],
+      "department": "Delhi Health Services",
+      "email": "dghs@delhi.gov.in",
+      "head": "Director General of Health Services",
+      "portal_url": "https://health.delhigovt.nic.in/wps/wcm/connect/health/Health/Home/Grievance+Redressal",
+      "address": "F-17, Karkardooma, Delhi - 110032",
+      "response_days": 5
+    },
+    {
+      "category": "Education",
+      "keywords": ["school", "teacher", "admission", "fees", "student", "padhai", "books", "uniform", "scholarship", "midday meal", "khana", "principal", "class", "exam", "result", "certificate"],
+      "department": "Directorate of Education Delhi",
+      "email": "doe@delhi.gov.in",
+      "head": "Director of Education",
+      "portal_url": "https://www.edudel.nic.in/welcome_folder/grievance.htm",
+      "address": "Old Secretariat, Delhi - 110054",
+      "response_days": 7
+    },
+    {
+      "category": "Sanitation",
+      "keywords": ["kuda", "garbage", "safai", "cleaning", "sweeper", "dustbin", "waste", "smell", "badbu", "MCD", "municipal", "cleanliness", "sewage", "drain", "pest", "mosquito", "dengue"],
+      "department": "Municipal Corporation of Delhi",
+      "email": "mcdonline@nic.in",
+      "head": "Commissioner, MCD",
+      "portal_url": "https://mcdonline.nic.in/portal/grievance",
+      "address": "Dr. S.P. Mukherjee Civic Centre, Minto Road, New Delhi - 110002",
+      "response_days": 7
+    },
+    {
+      "category": "Police",
+      "keywords": ["police", "theft", "chor", "chori", "crime", "FIR", "complaint", "harassment", "assault", "security", "safety", "accident", "fight", "jhagda", "noise", "shor", "eve teasing", "fraud"],
+      "department": "Delhi Police",
+      "email": "cp@delhipolice.gov.in",
+      "head": "Commissioner of Police Delhi",
+      "portal_url": "https://delhipolice.gov.in/home/e-lost-report",
+      "address": "Delhi Police Headquarters, Jai Singh Road, New Delhi - 110001",
+      "response_days": 3
+    },
+    {
+      "category": "Ration",
+      "keywords": ["ration", "PDS", "anaj", "gehu", "wheat", "rice", "chawal", "kerosene", "mitti ka tel", "ration card", "fair price shop", "FPS", "quota", "subsidy", "dal", "sugar", "chini"],
+      "department": "Delhi Food and Civil Supplies Department",
+      "email": "dfsc@nic.in",
+      "head": "Commissioner Food and Civil Supplies",
+      "portal_url": "https://food.delhi.gov.in/food/citizen_corner/grievance_redressal.php",
+      "address": "Khanpur, New Delhi - 110062",
+      "response_days": 7
+    },
+    {
+      "category": "Land",
+      "keywords": ["zameen", "land", "property", "registry", "mutation", "intkal", "khasra", "khatoni", "jamabandi", "fard", "patwari", "tehsildar", "boundary", "encroachment", "kabja", "plot", "building"],
+      "department": "Delhi Revenue Department",
+      "email": "revenue@delhi.gov.in",
+      "head": "Divisional Commissioner Delhi",
+      "portal_url": "https://revenue.delhi.gov.in/revenue/grievance.aspx",
+      "address": "5 Shamnath Marg, Delhi - 110054",
+      "response_days": 15
+    },
+    {
+      "category": "Pension",
+      "keywords": ["pension", "old age", "budhapa", "widow", "vidhwa", "disability", "viklang", "allowance", "bhatta", "social security", "welfare", "scheme", "beneficiary", "payment", "money not received"],
+      "department": "Delhi Social Welfare Department",
+      "email": "dsw@delhi.gov.in",
+      "head": "Director, Social Welfare Department",
+      "portal_url": "https://socialjustice.delhigovt.nic.in/wps/wcm/connect/social/Social+Welfare/Home/Grievance",
+      "address": "GLNS Complex, Delhi Gate, New Delhi - 110002",
+      "response_days": 10
+    }
+  ],
+  "default_department": {
+    "category": "General",
+    "department": "Chief Minister Helpline Delhi",
+    "email": "cm@delhi.gov.in",
+    "portal_url": "https://cmhelpline.delhi.gov.in",
+    "phone": "1076",
+    "response_days": 7
+  },
+  "metadata": {
+    "city": "Delhi",
+    "languages_supported": ["Hindi", "English", "Punjabi", "Urdu", "Bhojpuri", "Maithili"],
+    "version": "1.0",
+    "last_updated": "2024-03-01"
+  }
+}

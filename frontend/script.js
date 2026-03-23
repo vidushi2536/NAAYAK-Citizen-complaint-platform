@@ -1,3 +1,4 @@
+const API_URL = "https://naayak--parnikadesk.replit.app";
 const DEMO_OTP = "123456";
 const TICKET_YEAR = "2024";
 const ADHIKARI_CREDENTIALS = {
@@ -257,19 +258,16 @@ function getMockAiResponse(complaintText, selectedCategory, location) {
     return { category, urgency, department, email, draft };
 }
 
-async function analyzeComplaint(complaintText, selectedCategory, location, language) {
+async function analyzeComplaint(complaintText, context = {}) {
     try {
-        const response = await fetch("/analyze", {
+        const response = await fetch(API_URL + "/analyze", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
                 Accept: "application/json"
             },
             body: JSON.stringify({
-                complaintText,
-                category: selectedCategory,
-                location,
-                language
+                complaint: complaintText
             })
         });
 
@@ -283,21 +281,21 @@ async function analyzeComplaint(complaintText, selectedCategory, location, langu
         }
 
         const urgency = ["High", "Medium", "Low"].includes(result.urgency) ? result.urgency : getRandomUrgency();
-        const department = result.department || "Municipal Corporation";
-        const email = result.email || "municipal@gov.in";
-        const category = result.category || selectedCategory || "Public Safety";
+        const department = result.department || result.dept || "Municipal Corporation";
+        const email = result.email || result.recipient || "municipal@gov.in";
+        const category = result.category || context.selectedCategory || "Public Safety";
         const draft = result.draft || buildDraftEmail({
             complaintText,
             category,
             urgency,
             department,
             email,
-            location
+            location: context.location
         });
 
         return { category, urgency, department, email, draft };
     } catch (error) {
-        return getMockAiResponse(complaintText, selectedCategory, location);
+        return getMockAiResponse(complaintText, context.selectedCategory, context.location);
     }
 }
 
@@ -350,7 +348,11 @@ async function submitComplaint() {
 
     showScreen("loadingScreen");
     const loadingStart = Date.now();
-    const response = await analyzeComplaint(complaintText, selectedCategory, location, language);
+    const response = await analyzeComplaint(complaintText, {
+        selectedCategory,
+        location,
+        language
+    });
     const remainingDelay = Math.max(0, 1500 - (Date.now() - loadingStart));
 
     latestComplaint = {
@@ -380,14 +382,39 @@ function showTrackingPanel() {
     panel.scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
-function sendEmail() {
-    if (!latestComplaint) {
+async function sendEmail(data = null) {
+    const payload = data || latestComplaint;
+    if (!payload) {
         alert("Please submit a complaint first.");
         return;
     }
 
     const ticketId = generateTicketId();
-    latestComplaint.ticketId = ticketId;
+    latestComplaint = {
+        ...payload,
+        ticketId
+    };
+
+    try {
+        await fetch(API_URL + "/send-email", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                ticketId,
+                complaint: latestComplaint.complaintText,
+                location: latestComplaint.location,
+                language: latestComplaint.language,
+                urgency: latestComplaint.response.urgency,
+                department: latestComplaint.response.department,
+                email: latestComplaint.response.email,
+                draft: latestComplaint.response.draft
+            })
+        });
+    } catch (error) {
+        // Keep the citizen flow working even if backend email delivery is unavailable.
+    }
 
     const ticketIdEl = document.getElementById("ticketId");
     const trackingTicketEl = document.getElementById("trackingTicketId");
@@ -550,6 +577,19 @@ function updateComplaintStatus(ticketId, nextStatus) {
         return complaint;
     });
     syncDashboardView();
+
+    fetch(API_URL + "/update-status", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            ticket_id: ticketId,
+            status: nextStatus
+        })
+    }).catch(() => {
+        // Keep local UI updates even if backend status sync fails.
+    });
 }
 
 function bindStatusDropdowns() {
@@ -694,7 +734,7 @@ function syncDashboardView() {
 
 async function loadDashboard() {
     try {
-        const response = await fetch("/complaints", {
+        const response = await fetch(API_URL + "/complaints", {
             method: "GET",
             headers: {
                 Accept: "application/json"
