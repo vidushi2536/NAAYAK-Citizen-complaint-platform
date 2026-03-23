@@ -613,7 +613,7 @@ function renderAdminTable() {
             <td class="summary-cell">${complaint.summary}</td>
             <td>${complaint.category}</td>
             <td><span class="urgency-badge ${getDashboardUrgencyBadgeClass(complaint.urgency)}">${complaint.urgency}</span></td>
-            <td>${complaint.department}</td>
+            <td><span class="department-badge">${complaint.department}</span></td>
             <td>${complaint.status}</td>
         `;
         tableBody.appendChild(row);
