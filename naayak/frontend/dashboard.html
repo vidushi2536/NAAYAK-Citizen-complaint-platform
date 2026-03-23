@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Government Complaint Dashboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <main class="app-shell">
+        <div class="mobile-frame">
+            <header class="top-header">
+                <p class="top-header-kicker">Civic Tech Platform</p>
+                <h1 class="brand-title">Naayak</h1>
+                <p class="brand-subtitle">Your voice to the government</p>
+            </header>
+
+            <section class="hero-card">
+                <div class="eyebrow">Government Ops</div>
+                <div class="hero-row">
+                    <div>
+                        <h2>Government Complaint Dashboard</h2>
+                        <p>Monitor department-wise complaints, update progress, and review urgency trends from one mobile-friendly operations console.</p>
+                    </div>
+                    <div class="seal-mark">Live</div>
+                </div>
+                <div class="hero-badges">
+                    <span class="badge badge-red">High priority</span>
+                    <span class="badge badge-yellow">Department filter</span>
+                    <span class="badge badge-green">Offline localStorage</span>
+                </div>
+            </section>
+
+            <section class="card section-card">
+                <div class="section-head">
+                    <div>
+                        <p class="section-kicker">Filters</p>
+                        <h2>Department view</h2>
+                    </div>
+                    <span class="section-tag">Offline Mode</span>
+                </div>
+
+                <label class="field-label" for="departmentFilter">Filter by department</label>
+                <select id="departmentFilter">
+                    <option value="All">All Departments</option>
+                </select>
+            </section>
+
+            <section class="card section-card">
+                <div class="section-head">
+                    <div>
+                        <p class="section-kicker">Analytics</p>
+                        <h2>Complaints by category</h2>
+                    </div>
+                </div>
+                <div class="chart-panel">
+                    <canvas id="complaintCategoryBarChart" height="240"></canvas>
+                </div>
+            </section>
+
+            <section class="table-card">
+                <div class="table-toolbar">
+                    <div class="table-title-row">
+                        <div>
+                            <p class="table-label">Complaint Queue</p>
+                            <h2>Active complaint records</h2>
+                        </div>
+                        <span id="tableCount" class="table-chip">0 complaints</span>
+                    </div>
+                </div>
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Ticket ID</th>
+                                <th>Summary</th>
+                                <th>Category</th>
+                                <th>Urgency</th>
+                                <th>Department</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="complaintsTableBody"></tbody>
+                    </table>
+                </div>
+            </section>
+
+            <a class="text-link" href="index.html">Return to citizen app</a>
+        </div>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
