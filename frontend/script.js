@@ -267,7 +267,10 @@ async function analyzeComplaint(complaintText, context = {}) {
                 Accept: "application/json"
             },
             body: JSON.stringify({
-                complaint: complaintText
+                text: complaintText,
+                language: context.language || "English",
+                citizen_name: context.citizenName || "Citizen",
+                citizen_phone: context.citizenPhone || ""
             })
         });
 
@@ -280,11 +283,12 @@ async function analyzeComplaint(complaintText, context = {}) {
             throw new Error("Analyze response is invalid");
         }
 
-        const urgency = ["High", "Medium", "Low"].includes(result.urgency) ? result.urgency : getRandomUrgency();
-        const department = result.department || result.dept || "Municipal Corporation";
-        const email = result.email || result.recipient || "municipal@gov.in";
-        const category = result.category || context.selectedCategory || "Public Safety";
-        const draft = result.draft || buildDraftEmail({
+        const analysis = result.analysis || {};
+        const urgency = ["High", "Medium", "Low"].includes(analysis.urgency) ? analysis.urgency : getRandomUrgency();
+        const department = analysis.department || "Municipal Corporation";
+        const email = analysis.department_email || "municipal@gov.in";
+        const category = analysis.category || context.selectedCategory || "Public Safety";
+        const draft = result.email_body || buildDraftEmail({
             complaintText,
             category,
             urgency,
@@ -293,7 +297,16 @@ async function analyzeComplaint(complaintText, context = {}) {
             location: context.location
         });
 
-        return { category, urgency, department, email, draft };
+        return {
+            complaintId: result.complaint_id || generateTicketId(),
+            category,
+            urgency,
+            department,
+            email,
+            draft,
+            summary: analysis.summary || buildComplaintSummary(complaintText),
+            filedAt: result.filed_at || ""
+        };
     } catch (error) {
         return getMockAiResponse(complaintText, context.selectedCategory, context.location);
     }
@@ -318,7 +331,7 @@ function updateResultScreen(response) {
         emailEl.textContent = response.email;
     }
     if (ticketIdEl) {
-        ticketIdEl.textContent = "Generated after send";
+        ticketIdEl.textContent = response.complaintId || "Generated after send";
     }
     if (aiSummaryEl) {
         aiSummaryEl.textContent = `AI matched this complaint to ${response.department}, marked it ${response.urgency.toLowerCase()} priority, and prepared a draft for ${response.category.toLowerCase()} handling.`;
@@ -351,7 +364,9 @@ async function submitComplaint() {
     const response = await analyzeComplaint(complaintText, {
         selectedCategory,
         location,
-        language
+        language,
+        citizenName: "Citizen",
+        citizenPhone: ""
     });
     const remainingDelay = Math.max(0, 1500 - (Date.now() - loadingStart));
 
@@ -389,7 +404,7 @@ async function sendEmail(data = null) {
         return;
     }
 
-    const ticketId = generateTicketId();
+    const ticketId = payload.response.complaintId || generateTicketId();
     latestComplaint = {
         ...payload,
         ticketId
@@ -402,14 +417,18 @@ async function sendEmail(data = null) {
                 "Content-Type": "application/json"
             },
             body: JSON.stringify({
-                ticketId,
-                complaint: latestComplaint.complaintText,
-                location: latestComplaint.location,
-                language: latestComplaint.language,
-                urgency: latestComplaint.response.urgency,
-                department: latestComplaint.response.department,
-                email: latestComplaint.response.email,
-                draft: latestComplaint.response.draft
+                complaint_data: {
+                    category: latestComplaint.response.category,
+                    urgency: latestComplaint.response.urgency,
+                    department: latestComplaint.response.department,
+                    department_email: latestComplaint.response.email,
+                    summary: latestComplaint.response.summary || buildComplaintSummary(latestComplaint.complaintText),
+                    translated_text: latestComplaint.complaintText
+                },
+                citizen_name: "Citizen",
+                citizen_phone: "",
+                complaint_id: ticketId,
+                email_body: latestComplaint.response.draft
             })
         });
     } catch (error) {
@@ -578,15 +597,11 @@ function updateComplaintStatus(ticketId, nextStatus) {
     });
     syncDashboardView();
 
-    fetch(API_URL + "/update-status", {
-        method: "POST",
+    fetch(`${API_URL}/complaints/${encodeURIComponent(ticketId)}/status?status=${encodeURIComponent(nextStatus)}`, {
+        method: "PATCH",
         headers: {
             "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-            ticket_id: ticketId,
-            status: nextStatus
-        })
+        }
     }).catch(() => {
         // Keep local UI updates even if backend status sync fails.
     });
@@ -745,12 +760,19 @@ async function loadDashboard() {
             throw new Error(`Request failed with status ${response.status}`);
         }
 
-        const complaints = await response.json();
-        if (!Array.isArray(complaints)) {
+        const payload = await response.json();
+        if (!payload || !Array.isArray(payload.complaints)) {
             throw new Error("Complaints response is not an array");
         }
 
-        dashboardState.complaints = complaints;
+        dashboardState.complaints = payload.complaints.map((complaint) => ({
+            ticketId: complaint.complaint_id,
+            summary: complaint.summary || "No summary available",
+            category: complaint.category || "General",
+            urgency: complaint.urgency || "Low",
+            department: complaint.department || "Municipal Corporation",
+            status: complaint.status || "Pending"
+        }));
         dashboardState.source = "api";
     } catch (error) {
         dashboardState.complaints = dummyComplaints.map((complaint) => ({ ...complaint }));
