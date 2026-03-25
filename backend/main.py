@@ -6,7 +6,8 @@ import random
 import string
 from datetime import datetime
 from ai_engine import analyze_complaint, generate_email
-from email_sender import send_grievance_email
+from email_sender import send_grievance_email, send_bulk_grievance_email
+from duplicate_checker import check_duplicate
 
 app = FastAPI(title="Naayak API", description="AI Grievance Redressal System for Delhi Citizens")
 
@@ -20,6 +21,7 @@ app.add_middleware(
 
 otp_store = {}
 complaint_store = {}
+duplicate_store = {}
 
 
 class ComplaintRequest(BaseModel):
@@ -27,6 +29,7 @@ class ComplaintRequest(BaseModel):
     language: str = "Hindi"
     citizen_name: Optional[str] = "Citizen"
     citizen_phone: Optional[str] = ""
+    location: Optional[str] = ""
 
 
 class EmailRequest(BaseModel):
@@ -94,6 +97,23 @@ def analyze(request: ComplaintRequest):
     try:
         result = analyze_complaint(request.text, request.language)
 
+        duplicate_id = check_duplicate(request.text, request.location, complaint_store)
+        if duplicate_id:
+            complaint_store[duplicate_id]["bulk_count"] += 1
+            bulk_count = complaint_store[duplicate_id]["bulk_count"]
+            original_summary = complaint_store[duplicate_id]["analysis"].get("summary", "")
+            if "citizens" not in original_summary.lower():
+                complaint_store[duplicate_id]["analysis"]["summary"] = f"{bulk_count} citizens reported: {original_summary}"
+            return {
+                "success": True,
+                "complaint_id": duplicate_id,
+                "analysis": complaint_store[duplicate_id]["analysis"],
+                "email_body": complaint_store[duplicate_id]["email_body"],
+                "filed_at": complaint_store[duplicate_id]["filed_at"],
+                "bulk_count": bulk_count,
+                "bulk_citizens": bulk_count
+            }
+
         complaint_id = generate_complaint_id()
 
         email_body = generate_email(
@@ -109,10 +129,12 @@ def analyze(request: ComplaintRequest):
             "citizen_phone": request.citizen_phone,
             "original_text": request.text,
             "language": request.language,
+            "location": request.location,
             "analysis": result,
             "email_body": email_body,
             "status": "Pending",
-            "filed_at": datetime.now().strftime("%d %B %Y at %I:%M %p")
+            "filed_at": datetime.now().strftime("%d %B %Y at %I:%M %p"),
+            "bulk_count": 1
         }
 
         return {
@@ -120,7 +142,9 @@ def analyze(request: ComplaintRequest):
             "complaint_id": complaint_id,
             "analysis": result,
             "email_body": email_body,
-            "filed_at": complaint_store[complaint_id]["filed_at"]
+            "filed_at": complaint_store[complaint_id]["filed_at"],
+            "bulk_count": 1,
+            "bulk_citizens": 1
         }
 
     except Exception as e:
@@ -130,13 +154,37 @@ def analyze(request: ComplaintRequest):
 @app.post("/send-email")
 def send_email(request: EmailRequest):
     try:
-        result = send_grievance_email(
-            complaint_data=request.complaint_data,
-            citizen_name=request.citizen_name,
-            citizen_phone=request.citizen_phone,
-            complaint_id=request.complaint_id,
-            email_body=request.email_body
-        )
+        if request.complaint_id in complaint_store:
+            complaint_data = complaint_store[request.complaint_id]
+            bulk_count = complaint_data.get("bulk_count", 1)
+            location = complaint_data.get("location", "")
+            if bulk_count > 1:
+                result = send_bulk_grievance_email(
+                    complaint_data=request.complaint_data,
+                    citizen_name=request.citizen_name,
+                    citizen_phone=request.citizen_phone,
+                    complaint_id=request.complaint_id,
+                    email_body=request.email_body,
+                    bulk_count=bulk_count,
+                    location=location
+                )
+            else:
+                result = send_grievance_email(
+                    complaint_data=request.complaint_data,
+                    citizen_name=request.citizen_name,
+                    citizen_phone=request.citizen_phone,
+                    complaint_id=request.complaint_id,
+                    email_body=request.email_body
+                )
+        else:
+            # Fallback to normal if not in store
+            result = send_grievance_email(
+                complaint_data=request.complaint_data,
+                citizen_name=request.citizen_name,
+                citizen_phone=request.citizen_phone,
+                complaint_id=request.complaint_id,
+                email_body=request.email_body
+            )
 
         if request.complaint_id in complaint_store:
             complaint_store[request.complaint_id]["status"] = "Filed"
@@ -183,8 +231,12 @@ def get_all_complaints():
             "category": data["analysis"].get("category"),
             "urgency": data["analysis"].get("urgency"),
             "department": data["analysis"].get("department"),
+            "email": data["analysis"].get("department_email", "municipal@gov.in"),
             "status": data["status"],
-            "filed_at": data["filed_at"]
+            "filed_at": data["filed_at"],
+            "location": data.get("location", ""),
+            "original_text": data["original_text"],
+            "bulk_count": data.get("bulk_count", 1)
         })
     complaints.sort(key=lambda x: (
         0 if x["urgency"] == "High" else 1 if x["urgency"] == "Medium" else 2
@@ -209,6 +261,23 @@ def update_status(complaint_id: str, status: str):
         "complaint_id": complaint_id,
         "status": status,
         "updated_at": datetime.now().strftime("%d %B %Y at %I:%M %p")
+    }
+
+
+@app.patch("/complaints/{complaint_id}/bulk")
+def increment_bulk(complaint_id: str):
+    if complaint_id not in complaint_store:
+        raise HTTPException(status_code=404, detail="Complaint not found")
+    complaint_store[complaint_id]["bulk_count"] = complaint_store[complaint_id].get("bulk_count", 1) + 1
+    # Update summary to reflect bulk
+    original_summary = complaint_store[complaint_id]["analysis"].get("summary", "")
+    if "citizens" not in original_summary.lower():
+        complaint_store[complaint_id]["analysis"]["summary"] = f"{complaint_store[complaint_id]['bulk_count']} citizens reported: {original_summary}"
+    return {
+        "success": True,
+        "complaint_id": complaint_id,
+        "bulk_count": complaint_store[complaint_id]["bulk_count"],
+        "updated_summary": complaint_store[complaint_id]["analysis"]["summary"]
     }
 
 
