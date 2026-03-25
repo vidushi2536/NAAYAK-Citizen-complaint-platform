@@ -106,6 +106,10 @@
                     <span class="section-tag">AI Analysis</span>
                 </div>
 
+                <div id="bulkBanner" class="bulk-banner hidden">
+                    <strong>Bulk Complaint!</strong> X citizens have reported this issue in your area
+                </div>
+
                 <div class="result-grid">
                     <article class="result-tile">
                         <span class="result-label">Urgency</span>
@@ -134,7 +138,7 @@
                 <textarea id="draftEmail"></textarea>
 
                 <div class="action-stack">
-                    <button class="btn btn-primary" type="button" onclick="sendEmail()">Send and Generate Ticket</button>
+                    <button id="sendButton" class="btn btn-primary" type="button" onclick="sendEmail()">Send and Generate Ticket</button>
                     <button class="btn btn-secondary" type="button" onclick="showTrackingPanel()">Track Complaint</button>
                 </div>
             </section>

@@ -103,6 +103,52 @@ function getRecognitionLanguage() {
     return languageField.value === "Hindi" ? "hi-IN" : "en-IN";
 }
 
+async function fetchComplaints() {
+    try {
+        const response = await fetch(API_URL + "/complaints");
+        if (!response.ok) {
+            throw new Error(`Failed to fetch complaints: ${response.status}`);
+        }
+        const data = await response.json();
+        return data.complaints || [];
+    } catch (error) {
+        console.error("Error fetching complaints:", error);
+        return [];
+    }
+}
+
+function isWithinLast7Days(filedAt) {
+    if (!filedAt) return false;
+    const now = new Date();
+    const complaintDate = new Date(filedAt);
+    const diffTime = Math.abs(now - complaintDate);
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    return diffDays <= 7;
+}
+
+function areComplaintsSimilar(text1, text2) {
+    const normalize = (text) => text.toLowerCase().replace(/[^\w\s]/g, '').trim();
+    const t1 = normalize(text1);
+    const t2 = normalize(text2);
+    
+    // Simple similarity: check if they share significant common words
+    const words1 = new Set(t1.split(/\s+/));
+    const words2 = new Set(t2.split(/\s+/));
+    const intersection = new Set([...words1].filter(x => words2.has(x)));
+    const union = new Set([...words1, ...words2]);
+    
+    const similarity = intersection.size / union.size;
+    return similarity > 0.3; // 30% similarity threshold
+}
+
+function findSimilarComplaint(complaints, newComplaintText, location) {
+    return complaints.find(complaint => 
+        complaint.location === location && 
+        isWithinLast7Days(complaint.filed_at) && 
+        areComplaintsSimilar(complaint.original_text, newComplaintText)
+    );
+}
+
 function getCurrentPage() {
     const path = window.location.pathname.toLowerCase();
     if (path.endsWith("/citizen.html")) return "citizen";
@@ -255,7 +301,17 @@ function getMockAiResponse(complaintText, selectedCategory, location) {
         location
     });
 
-    return { category, urgency, department, email, draft };
+    return { 
+        category, 
+        urgency, 
+        department, 
+        email, 
+        draft, 
+        summary: buildComplaintSummary(complaintText),
+        complaintId: generateTicketId(),
+        filedAt: "",
+        bulk_count: 1
+    };
 }
 
 async function analyzeComplaint(complaintText, context = {}) {
@@ -270,7 +326,8 @@ async function analyzeComplaint(complaintText, context = {}) {
                 text: complaintText,
                 language: context.language || "English",
                 citizen_name: context.citizenName || "Citizen",
-                citizen_phone: context.citizenPhone || ""
+                citizen_phone: context.citizenPhone || "",
+                location: context.location || ""
             })
         });
 
@@ -305,7 +362,8 @@ async function analyzeComplaint(complaintText, context = {}) {
             email,
             draft,
             summary: analysis.summary || buildComplaintSummary(complaintText),
-            filedAt: result.filed_at || ""
+            filedAt: result.filed_at || "",
+            bulk_count: 1
         };
     } catch (error) {
         return getMockAiResponse(complaintText, context.selectedCategory, context.location);
@@ -319,6 +377,8 @@ function updateResultScreen(response) {
     const ticketIdEl = document.getElementById("ticketId");
     const aiSummaryEl = document.getElementById("aiSummary");
     const draftEmailEl = document.getElementById("draftEmail");
+    const bulkBanner = document.getElementById("bulkBanner");
+    const sendButton = document.getElementById("sendButton");
 
     if (urgencyEl) {
         urgencyEl.textContent = response.urgency;
@@ -334,10 +394,26 @@ function updateResultScreen(response) {
         ticketIdEl.textContent = response.complaintId || "Generated after send";
     }
     if (aiSummaryEl) {
-        aiSummaryEl.textContent = `AI matched this complaint to ${response.department}, marked it ${response.urgency.toLowerCase()} priority, and prepared a draft for ${response.category.toLowerCase()} handling.`;
+        const bulkText = response.bulk_count > 1 ? ` This is now a bulk complaint with ${response.bulk_count} citizens reporting the same issue.` : "";
+        aiSummaryEl.textContent = `AI matched this complaint to ${response.department}, marked it ${response.urgency.toLowerCase()} priority, and prepared a draft for ${response.category.toLowerCase()} handling.${bulkText}`;
     }
     if (draftEmailEl) {
         draftEmailEl.value = response.draft;
+    }
+    if (bulkBanner) {
+        if (response.bulk_count > 1) {
+            bulkBanner.classList.remove("hidden");
+            bulkBanner.innerHTML = `<strong>Bulk Complaint!</strong> ${response.bulk_count} citizens have reported this issue in your area`;
+        } else {
+            bulkBanner.classList.add("hidden");
+        }
+    }
+    if (sendButton) {
+        if (response.bulk_count > 1) {
+            sendButton.textContent = "Add to Bulk Grievance";
+        } else {
+            sendButton.textContent = "Send and Generate Ticket";
+        }
     }
 }
 
@@ -359,16 +435,60 @@ async function submitComplaint() {
         return;
     }
 
-    showScreen("loadingScreen");
-    const loadingStart = Date.now();
-    const response = await analyzeComplaint(complaintText, {
-        selectedCategory,
-        location,
-        language,
-        citizenName: "Citizen",
-        citizenPhone: ""
-    });
-    const remainingDelay = Math.max(0, 1500 - (Date.now() - loadingStart));
+    // Check for similar complaints
+    const complaints = await fetchComplaints();
+    const similarComplaint = findSimilarComplaint(complaints, complaintText, location);
+
+    let response;
+    if (similarComplaint) {
+        // Increment bulk count for existing complaint
+        try {
+            const bulkResponse = await fetch(`${API_URL}/complaints/${similarComplaint.complaint_id}/bulk`, {
+                method: "PATCH",
+                headers: {
+                    "Content-Type": "application/json"
+                }
+            });
+            if (!bulkResponse.ok) {
+                throw new Error(`Bulk update failed: ${bulkResponse.status}`);
+            }
+            const bulkData = await bulkResponse.json();
+            // Get updated complaint data
+            const updatedComplaints = await fetchComplaints();
+            const updatedComplaint = updatedComplaints.find(c => c.complaint_id === similarComplaint.complaint_id);
+            response = {
+                complaintId: updatedComplaint.complaint_id,
+                category: updatedComplaint.category,
+                urgency: updatedComplaint.urgency,
+                department: updatedComplaint.department,
+                email: updatedComplaint.analysis?.department_email || "municipal@gov.in",
+                draft: updatedComplaint.email_body || "",
+                summary: updatedComplaint.summary,
+                filedAt: updatedComplaint.filed_at,
+                bulk_count: updatedComplaint.bulk_count
+            };
+        } catch (error) {
+            console.error("Error updating bulk complaint:", error);
+            alert("Failed to update bulk complaint. Proceeding with new filing.");
+            // Fall back to new filing
+        }
+    }
+
+    if (!response) {
+        showScreen("loadingScreen");
+        const loadingStart = Date.now();
+        response = await analyzeComplaint(complaintText, {
+            selectedCategory,
+            location,
+            language,
+            citizenName: "Citizen",
+            citizenPhone: ""
+        });
+        const remainingDelay = Math.max(0, 1500 - (Date.now() - loadingStart));
+        setTimeout(() => showScreen("resultScreen"), remainingDelay);
+    } else {
+        showScreen("resultScreen");
+    }
 
     latestComplaint = {
         complaintText,
@@ -379,10 +499,6 @@ async function submitComplaint() {
     };
 
     updateResultScreen(response);
-
-    window.setTimeout(() => {
-        showScreen("resultScreen");
-    }, remainingDelay);
 }
 
 function generateTicketId() {
@@ -663,6 +779,9 @@ function renderAdminTable() {
     complaints.forEach((complaint) => {
         const row = document.createElement("tr");
         row.className = getUrgencyRowClass(complaint.urgency);
+        if (complaint.bulk_count > 10) {
+            row.classList.add("hotspot-row");
+        }
         row.innerHTML = `
             <td class="ticket-code">${complaint.ticketId}</td>
             <td class="summary-cell">${complaint.summary}</td>
@@ -670,6 +789,7 @@ function renderAdminTable() {
             <td><span class="urgency-badge ${getDashboardUrgencyBadgeClass(complaint.urgency)}">${complaint.urgency}</span></td>
             <td><span class="department-badge">${complaint.department}</span></td>
             <td>${complaint.status}</td>
+            <td>${complaint.bulk_count || 1}</td>
         `;
         tableBody.appendChild(row);
     });
