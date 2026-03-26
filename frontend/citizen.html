@@ -119,6 +119,15 @@
                         <span class="result-label">Department</span>
                         <strong id="department">Municipal Corporation</strong>
                     </article>
+                    <article id="predictionCard" class="result-tile">
+                        <span class="result-label">Resolution Prediction</span>
+                        <div class="progress-bar-container">
+                            <div class="progress-bar"></div>
+                        </div>
+                        <strong id="predictionPercentage">Probability: XX%</strong>
+                        <p id="resolutionMessage">This department resolves only XX% of complaints on time</p>
+                        <span id="escalationRisk" class="badge">Escalation Risk: High / Medium / Low</span>
+                    </article>
                     <article class="result-tile">
                         <span class="result-label">Route to</span>
                         <strong id="email">municipal@gov.in</strong>
@@ -128,6 +137,15 @@
                         <strong id="ticketId">Generated after send</strong>
                     </article>
                 </div>
+
+                <details class="result-tile">
+                    <summary>
+                        <span class="result-label">RTI Notice</span>
+                        <span title="RTI Act 2005 gives you right to demand response within 30 days" aria-label="RTI information">i</span>
+                    </summary>
+                    <textarea id="rtiNoticeText" readonly style="width: 100%; min-height: 140px; overflow-y: auto; resize: vertical;">RTI notice text will appear here from the API.</textarea>
+                    <button type="button" class="btn" style="background-color: #f97316; color: #ffffff;">Send RTI Notice</button>
+                </details>
 
                 <div class="insight-panel">
                     <h3>AI routing notes</h3>

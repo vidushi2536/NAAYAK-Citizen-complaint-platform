@@ -93,6 +93,70 @@ function getDashboardUrgencyBadgeClass(urgency) {
     return "urgency-low";
 }
 
+function normalizeResolutionProbability(value) {
+    const numericValue = Number(value);
+    if (!Number.isFinite(numericValue)) {
+        return 50;
+    }
+    return Math.max(0, Math.min(100, Math.round(numericValue)));
+}
+
+function getResolutionBarColor(probability) {
+    if (probability > 65) return "#1D9E75";
+    if (probability >= 40) return "#EF9F27";
+    return "#E8593C";
+}
+
+function getEscalationRiskBadgeClass(risk) {
+    if (risk === "High") return "badge badge-red";
+    if (risk === "Medium") return "badge badge-yellow";
+    return "badge badge-green";
+}
+
+function getEscalationRiskBannerConfig(risk) {
+    if (risk === "High") {
+        return {
+            message: "This department has a poor resolution record. RTI notice prepared automatically.",
+            backgroundColor: "#FDE7E3",
+            textColor: "#A63C26",
+            borderColor: "#E8593C"
+        };
+    }
+    if (risk === "Medium") {
+        return {
+            message: "Moderate resolution performance. Monitoring recommended.",
+            backgroundColor: "#FEF3D7",
+            textColor: "#8A5A06",
+            borderColor: "#EF9F27"
+        };
+    }
+    return {
+        message: "This department has a good resolution record. We will monitor your complaint.",
+        backgroundColor: "#E4F5EE",
+        textColor: "#176B53",
+        borderColor: "#1D9E75"
+    };
+}
+
+function ensurePredictionBanner() {
+    const predictionCard = document.getElementById("predictionCard");
+    if (!predictionCard || !predictionCard.parentElement) return null;
+
+    let bannerEl = document.getElementById("predictionBanner");
+    if (!bannerEl) {
+        bannerEl = document.createElement("div");
+        bannerEl.id = "predictionBanner";
+        bannerEl.className = "result-tile";
+        bannerEl.style.padding = "14px 16px";
+        bannerEl.style.borderLeft = "4px solid transparent";
+        bannerEl.style.fontWeight = "600";
+        bannerEl.style.marginTop = "12px";
+        predictionCard.insertAdjacentElement("afterend", bannerEl);
+    }
+
+    return bannerEl;
+}
+
 function getSpeechRecognitionConstructor() {
     return window.SpeechRecognition || window.webkitSpeechRecognition || null;
 }
@@ -310,7 +374,10 @@ function getMockAiResponse(complaintText, selectedCategory, location) {
         summary: buildComplaintSummary(complaintText),
         complaintId: generateTicketId(),
         filedAt: "",
-        bulk_count: 1
+        bulk_count: 1,
+        resolutionProbability: 50,
+        escalationRisk: "Medium",
+        rtiNotice: "RTI notice text will appear here from the API."
     };
 }
 
@@ -363,7 +430,10 @@ async function analyzeComplaint(complaintText, context = {}) {
             draft,
             summary: analysis.summary || buildComplaintSummary(complaintText),
             filedAt: result.filed_at || "",
-            bulk_count: 1
+            bulk_count: 1,
+            resolutionProbability: normalizeResolutionProbability(analysis.resolution_probability),
+            escalationRisk: ["High", "Medium", "Low"].includes(analysis.escalation_risk) ? analysis.escalation_risk : "Medium",
+            rtiNotice: analysis.rti_notice || "RTI notice text will appear here from the API."
         };
     } catch (error) {
         return getMockAiResponse(complaintText, context.selectedCategory, context.location);
@@ -379,6 +449,16 @@ function updateResultScreen(response) {
     const draftEmailEl = document.getElementById("draftEmail");
     const bulkBanner = document.getElementById("bulkBanner");
     const sendButton = document.getElementById("sendButton");
+    const predictionBarEl = document.querySelector("#predictionCard .progress-bar");
+    const predictionPercentageEl = document.getElementById("predictionPercentage");
+    const resolutionMessageEl = document.getElementById("resolutionMessage");
+    const escalationRiskEl = document.getElementById("escalationRisk");
+    const rtiNoticeTextEl = document.getElementById("rtiNoticeText");
+    const predictionBannerEl = ensurePredictionBanner();
+
+    const resolutionProbability = normalizeResolutionProbability(response.resolutionProbability);
+    const escalationRisk = ["High", "Medium", "Low"].includes(response.escalationRisk) ? response.escalationRisk : "Medium";
+    const rtiNotice = response.rtiNotice || "RTI notice text will appear here from the API.";
 
     if (urgencyEl) {
         urgencyEl.textContent = response.urgency;
@@ -399,6 +479,30 @@ function updateResultScreen(response) {
     }
     if (draftEmailEl) {
         draftEmailEl.value = response.draft;
+    }
+    if (predictionBarEl) {
+        predictionBarEl.style.width = `${resolutionProbability}%`;
+        predictionBarEl.style.backgroundColor = getResolutionBarColor(resolutionProbability);
+    }
+    if (predictionPercentageEl) {
+        predictionPercentageEl.textContent = `Probability: ${resolutionProbability}%`;
+    }
+    if (resolutionMessageEl) {
+        resolutionMessageEl.textContent = `This department resolves only ${resolutionProbability}% of complaints on time`;
+    }
+    if (escalationRiskEl) {
+        escalationRiskEl.textContent = `Escalation Risk: ${escalationRisk}`;
+        escalationRiskEl.className = getEscalationRiskBadgeClass(escalationRisk);
+    }
+    if (rtiNoticeTextEl) {
+        rtiNoticeTextEl.value = rtiNotice;
+    }
+    if (predictionBannerEl) {
+        const bannerConfig = getEscalationRiskBannerConfig(escalationRisk);
+        predictionBannerEl.textContent = bannerConfig.message;
+        predictionBannerEl.style.backgroundColor = bannerConfig.backgroundColor;
+        predictionBannerEl.style.color = bannerConfig.textColor;
+        predictionBannerEl.style.borderLeftColor = bannerConfig.borderColor;
     }
     if (bulkBanner) {
         if (response.bulk_count > 1) {
@@ -465,7 +569,10 @@ async function submitComplaint() {
                 draft: updatedComplaint.email_body || "",
                 summary: updatedComplaint.summary,
                 filedAt: updatedComplaint.filed_at,
-                bulk_count: updatedComplaint.bulk_count
+                bulk_count: updatedComplaint.bulk_count,
+                resolutionProbability: normalizeResolutionProbability(updatedComplaint.analysis?.resolution_probability),
+                escalationRisk: ["High", "Medium", "Low"].includes(updatedComplaint.analysis?.escalation_risk) ? updatedComplaint.analysis.escalation_risk : "Medium",
+                rtiNotice: updatedComplaint.analysis?.rti_notice || "RTI notice text will appear here from the API."
             };
         } catch (error) {
             console.error("Error updating bulk complaint:", error);
@@ -511,6 +618,44 @@ function showTrackingPanel() {
     if (!panel) return;
     panel.classList.remove("hidden");
     panel.scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
+async function sendRtiNotice() {
+    if (!latestComplaint || !latestComplaint.response) {
+        alert("Please submit a complaint first.");
+        return;
+    }
+
+    try {
+        const response = await fetch(API_URL + "/send-rti", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                complaint: latestComplaint.complaintText,
+                department: latestComplaint.response.department,
+                urgency: latestComplaint.response.urgency,
+                rti_notice: latestComplaint.response.rtiNotice || ""
+            })
+        });
+
+        if (!response.ok) {
+            throw new Error(`RTI request failed with status ${response.status}`);
+        }
+
+        alert("RTI Notice sent successfully");
+    } catch (error) {
+        console.error("Error sending RTI notice:", error);
+    }
+}
+
+function bindRtiNoticeButton() {
+    const rtiButton = document.querySelector("button[style*='#f97316']");
+    if (!rtiButton || rtiButton.dataset.bound === "true") return;
+
+    rtiButton.addEventListener("click", sendRtiNotice);
+    rtiButton.dataset.bound = "true";
 }
 
 async function sendEmail(data = null) {
@@ -921,6 +1066,7 @@ function initIndexPage() {
 
 function initCitizenPage() {
     showScreen("complaintScreen");
+    bindRtiNoticeButton();
 }
 
 document.addEventListener("DOMContentLoaded", () => {
