@@ -399,11 +399,15 @@ function sendCitizenOTP() {
 
 function loginCitizen() {
     const otpField = document.getElementById("citizenOtp");
+    const phone = document.getElementById("citizenPhone");
     if (!otpField) return;
     if (otpField.value.trim() !== DEMO_OTP) {
         showToast("Incorrect OTP. Please use 123456.", "error", "Verification failed");
         otpField.focus();
         return;
+    }
+    if (phone && phone.value.trim()) {
+        localStorage.setItem("citizenPhone", phone.value.trim());
     }
     window.location.href = "citizen.html";
 }
@@ -654,7 +658,7 @@ async function submitComplaint() {
     }
 
     if (!response) {
-        response = await analyzeComplaint(complaintText, { selectedCategory, location, language, citizenName: "Citizen", citizenPhone: "" });
+        response = await analyzeComplaint(complaintText, { selectedCategory, location, language, citizenName: "Citizen", citizenPhone: localStorage.getItem("citizenPhone") || "" });
     }
 
     latestComplaint = { complaintText, location, language, selectedCategory, response };
@@ -691,7 +695,7 @@ async function sendEmail(data = null) {
                     translated_text: latestComplaint.complaintText
                 },
                 citizen_name: "Citizen",
-                citizen_phone: "",
+                citizen_phone: localStorage.getItem("citizenPhone") || "",
                 complaint_id: ticketId,
                 email_body: latestComplaint.response.draft
             })
