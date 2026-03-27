@@ -1,0 +1,8 @@
+uploads = []
+generated = []
+
+[[outputs]]
+id = "QQiLExGdRy-ntnsKKU5EC"
+uri = "file://naayak-project.zip"
+type = "unspecified"
+title = "Naayak Project Files"
