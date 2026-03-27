@@ -40,21 +40,39 @@
                         <p class="section-kicker">Login Portal</p>
                         <h2>Select your role</h2>
                     </div>
-                    <span class="section-tag">Demo Auth</span>
                 </div>
 
-                <div class="role-selector">
+                <div class="role-selector role-grid">
                     <button type="button" id="citizenRoleBtn" class="role-card active-role" onclick="selectRole('citizen')">
+                        <span class="role-icon" aria-hidden="true">
+                            <svg viewBox="0 0 24 24" fill="none">
+                                <path d="M12 12a4 4 0 1 0-4-4 4 4 0 0 0 4 4Z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                                <path d="M5 20a7 7 0 0 1 14 0" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                        </span>
                         <strong>Citizen</strong>
-                        <span>Phone + OTP login</span>
+                        <span class="role-copy">Phone + OTP login</span>
                     </button>
                     <button type="button" id="adhikariRoleBtn" class="role-card" onclick="selectRole('adhikari')">
+                        <span class="role-icon" aria-hidden="true">
+                            <svg viewBox="0 0 24 24" fill="none">
+                                <path d="M4 20h16" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                                <path d="M6 20V8l6-4 6 4v12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                                <path d="M9 11h.01M15 11h.01M9 15h.01M15 15h.01" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/>
+                            </svg>
+                        </span>
                         <strong>Adhikari</strong>
-                        <span>Department officer access</span>
+                        <span class="role-copy">Department officer access</span>
                     </button>
                     <button type="button" id="adminRoleBtn" class="role-card" onclick="selectRole('admin')">
+                        <span class="role-icon" aria-hidden="true">
+                            <svg viewBox="0 0 24 24" fill="none">
+                                <path d="M12 8.75a3.25 3.25 0 1 0 0 6.5 3.25 3.25 0 0 0 0-6.5Z" stroke="currentColor" stroke-width="1.8"/>
+                                <path d="M19.4 15a1 1 0 0 0 .2 1.1l.05.05a1.25 1.25 0 0 1 0 1.77l-1.27 1.27a1.25 1.25 0 0 1-1.77 0l-.05-.05a1 1 0 0 0-1.1-.2 1 1 0 0 0-.6.92V20a1.25 1.25 0 0 1-1.25 1.25h-1.8A1.25 1.25 0 0 1 10.56 20v-.08a1 1 0 0 0-.6-.92 1 1 0 0 0-1.1.2l-.05.05a1.25 1.25 0 0 1-1.77 0l-1.27-1.27a1.25 1.25 0 0 1 0-1.77l.05-.05a1 1 0 0 0 .2-1.1 1 1 0 0 0-.92-.6H5a1.25 1.25 0 0 1-1.25-1.25v-1.8A1.25 1.25 0 0 1 5 10.11h.08a1 1 0 0 0 .92-.6 1 1 0 0 0-.2-1.1l-.05-.05a1.25 1.25 0 0 1 0-1.77l1.27-1.27a1.25 1.25 0 0 1 1.77 0l.05.05a1 1 0 0 0 1.1.2h.02a1 1 0 0 0 .58-.92V4a1.25 1.25 0 0 1 1.25-1.25h1.8A1.25 1.25 0 0 1 14.81 4v.08a1 1 0 0 0 .6.92 1 1 0 0 0 1.1-.2l.05-.05a1.25 1.25 0 0 1 1.77 0l1.27 1.27a1.25 1.25 0 0 1 0 1.77l-.05.05a1 1 0 0 0-.2 1.1v.02a1 1 0 0 0 .92.58H20a1.25 1.25 0 0 1 1.25 1.25v1.8A1.25 1.25 0 0 1 20 14.81h-.08a1 1 0 0 0-.92.6Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                        </span>
                         <strong>Admin</strong>
-                        <span>Platform analytics and management</span>
+                        <span class="role-copy">Platform analytics and management</span>
                     </button>
                 </div>
             </section>

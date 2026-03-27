@@ -43,29 +43,47 @@
                     <span class="section-tag">Citizen Flow</span>
                 </div>
 
-                <div class="service-grid">
-                    <article class="service-tile">
-                        <span class="service-dot dot-green"></span>
-                        <strong>Water Supply</strong>
-                    </article>
-                    <article class="service-tile">
-                        <span class="service-dot dot-red"></span>
-                        <strong>Road Safety</strong>
-                    </article>
-                    <article class="service-tile">
-                        <span class="service-dot dot-yellow"></span>
-                        <strong>Sanitation</strong>
-                    </article>
+                <div class="flow-stepper" aria-label="Citizen progress">
+                    <div class="flow-step is-complete">
+                        <span class="flow-step-index">1</span>
+                        <div>
+                            <strong>Login</strong>
+                            <span>Verified access</span>
+                        </div>
+                    </div>
+                    <div class="flow-step is-current">
+                        <span class="flow-step-index">2</span>
+                        <div>
+                            <strong>File</strong>
+                            <span>Describe your issue</span>
+                        </div>
+                    </div>
+                    <div class="flow-step">
+                        <span class="flow-step-index">3</span>
+                        <div>
+                            <strong>Review</strong>
+                            <span>Confirm routing</span>
+                        </div>
+                    </div>
+                    <div class="flow-step">
+                        <span class="flow-step-index">4</span>
+                        <div>
+                            <strong>Track</strong>
+                            <span>Watch progress</span>
+                        </div>
+                    </div>
                 </div>
 
                 <label class="field-label" for="complaintCategory">Category</label>
-                <select id="complaintCategory">
-                    <option value="Road & Infrastructure">Road & Infrastructure</option>
-                    <option value="Water & Drainage">Water & Drainage</option>
-                    <option value="Electricity">Electricity</option>
-                    <option value="Sanitation">Sanitation</option>
-                    <option value="Public Safety">Public Safety</option>
-                </select>
+                <div class="chip-scroll" role="tablist" aria-label="Complaint category">
+                    <button type="button" class="category-chip active-chip" data-category="Roads" aria-pressed="true">🛣️ Roads</button>
+                    <button type="button" class="category-chip" data-category="Water" aria-pressed="false">💧 Water</button>
+                    <button type="button" class="category-chip" data-category="Electricity" aria-pressed="false">⚡ Electricity</button>
+                    <button type="button" class="category-chip" data-category="Sanitation" aria-pressed="false">🗑️ Sanitation</button>
+                    <button type="button" class="category-chip" data-category="Police" aria-pressed="false">🚔 Police</button>
+                    <button type="button" class="category-chip" data-category="Health" aria-pressed="false">🏥 Health</button>
+                </div>
+                <input type="hidden" id="complaintCategory" value="Roads">
 
                 <label class="field-label" for="location">Location</label>
                 <input type="text" id="location" placeholder="Ward, area or landmark">
@@ -107,17 +125,26 @@
                 </div>
 
                 <div id="bulkBanner" class="bulk-banner hidden">
-                    <strong>Bulk Complaint!</strong> X citizens have reported this issue in your area
+                    <strong>Bulk grievance nearby</strong> 7 citizens have reported this near you. Your complaint will be added to a bulk grievance for stronger impact.
                 </div>
 
                 <div class="result-grid">
-                    <article class="result-tile">
-                        <span class="result-label">Urgency</span>
-                        <strong id="urgency" class="status-pill status-pill-red">High</strong>
-                    </article>
-                    <article class="result-tile">
+                    <div class="result-row-compact">
+                        <article class="result-tile">
+                            <span class="result-label">Urgency</span>
+                            <strong id="urgency" class="status-pill status-pill-red">High</strong>
+                        </article>
+                        <article class="result-tile">
+                            <span class="result-label">Escalation Risk</span>
+                            <span id="escalationRisk" class="badge">Escalation Risk: High / Medium / Low</span>
+                        </article>
+                    </div>
+                    <article class="result-tile department-tile">
                         <span class="result-label">Department</span>
-                        <strong id="department">Municipal Corporation</strong>
+                        <div class="department-inline">
+                            <strong id="department">Municipal Corporation</strong>
+                            <button type="button" id="copyEmailButton" class="copy-tag" data-copy-target="email">municipal@gov.in</button>
+                        </div>
                     </article>
                     <article id="predictionCard" class="result-tile">
                         <span class="result-label">Resolution Prediction</span>
@@ -126,11 +153,7 @@
                         </div>
                         <strong id="predictionPercentage">Probability: XX%</strong>
                         <p id="resolutionMessage">This department resolves only XX% of complaints on time</p>
-                        <span id="escalationRisk" class="badge">Escalation Risk: High / Medium / Low</span>
-                    </article>
-                    <article class="result-tile">
-                        <span class="result-label">Route to</span>
-                        <strong id="email">municipal@gov.in</strong>
+                        <span class="visually-hidden" id="email">municipal@gov.in</span>
                     </article>
                     <article class="result-tile">
                         <span class="result-label">Ticket ID</span>
@@ -182,6 +205,37 @@
                 <div class="insight-panel">
                     <h3>Current update</h3>
                     <p id="trackingSummary">Your complaint is waiting for department acknowledgment.</p>
+                </div>
+
+                <div id="trackingTimeline" class="tracking-timeline" aria-live="polite">
+                    <article class="timeline-step is-done">
+                        <div class="timeline-marker">✓</div>
+                        <div class="timeline-content">
+                            <strong>Filed</strong>
+                            <p id="timelineFiledDate">Complaint submitted today</p>
+                        </div>
+                    </article>
+                    <article class="timeline-step is-current">
+                        <div class="timeline-marker">2</div>
+                        <div class="timeline-content">
+                            <strong>Pending</strong>
+                            <p id="timelinePendingText">Expected response in 7 working days</p>
+                        </div>
+                    </article>
+                    <article class="timeline-step">
+                        <div class="timeline-marker">3</div>
+                        <div class="timeline-content">
+                            <strong>In Progress</strong>
+                            <p>Department action will appear here after acknowledgment.</p>
+                        </div>
+                    </article>
+                    <article class="timeline-step">
+                        <div class="timeline-marker">4</div>
+                        <div class="timeline-content">
+                            <strong>Resolved</strong>
+                            <p>Final closure update will appear here.</p>
+                        </div>
+                    </article>
                 </div>
             </section>
         </div>
