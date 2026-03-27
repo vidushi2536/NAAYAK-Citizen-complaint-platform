@@ -1,4 +1,4 @@
-const API_URL = "http://localhost:8000";
+const API_URL = "";
 const DEMO_OTP = "123456";
 const TICKET_YEAR = new Date().getFullYear().toString();
 const ADHIKARI_CREDENTIALS = {

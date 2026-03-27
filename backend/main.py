@@ -1,9 +1,12 @@
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
 from pydantic import BaseModel
 from typing import Optional
 import random
 import string
+import os
 from datetime import datetime
 from ai_engine import analyze_complaint, generate_email
 from email_sender import send_grievance_email, send_bulk_grievance_email
@@ -18,6 +21,8 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+FRONTEND_DIR = os.path.join(os.path.dirname(__file__), "..", "frontend")
 
 otp_store = {}
 complaint_store = {}
@@ -122,7 +127,7 @@ Date: {now}
 """
 
 
-@app.get("/")
+@app.get("/health")
 def root():
     return {"message": "Naayak API is running", "version": "1.0", "city": "Delhi", "status": "active"}
 
@@ -350,6 +355,9 @@ def increment_bulk(complaint_id: str):
     return {"success": True, "complaint_id": complaint_id, "bulk_count": bulk_count, "updated_summary": complaint_store[complaint_id]["analysis"]["summary"]}
 
 
+app.mount("/", StaticFiles(directory=FRONTEND_DIR, html=True), name="frontend")
+
+
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)
+    uvicorn.run("main:app", host="0.0.0.0", port=5000, reload=True)
