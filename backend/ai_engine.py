@@ -1,30 +1,27 @@
-import requests
 import json
 import os
 from dotenv import load_dotenv
+from google import genai
 
 load_dotenv()
 
-GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
-GEMINI_URL = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key={GEMINI_API_KEY}"
+GEMINI_API_KEY = os.getenv("GOOGLE_API_KEY") or os.getenv("GEMINI_API_KEY")
+_client = None
+
+def get_client():
+    global _client
+    if _client is None:
+        _client = genai.Client(api_key=GEMINI_API_KEY)
+    return _client
 
 
 def call_gemini(prompt: str) -> str:
-    payload = {
-        "contents": [
-            {"parts": [{"text": prompt}]}
-        ]
-    }
-    response = requests.post(
-        GEMINI_URL,
-        headers={"Content-Type": "application/json"},
-        json=payload,
-        timeout=30
+    client = get_client()
+    response = client.models.generate_content(
+        model="gemini-2.0-flash",
+        contents=prompt
     )
-    data = response.json()
-    if "candidates" not in data:
-        raise Exception(f"Gemini error: {data}")
-    return data["candidates"][0]["content"]["parts"][0]["text"]
+    return response.text
 
 
 def load_knowledge_base():
