@@ -2,6 +2,7 @@ import json
 import os
 from dotenv import load_dotenv
 from google import genai
+from google.genai import types
 
 load_dotenv()
 
@@ -37,6 +38,72 @@ def load_ministries():
         data = json.load(f)
     return data["departments"]
 
+
+# ─── NEW: Image Analysis via Gemini Vision ────────────────────────────────────
+
+def analyze_image(image_bytes: bytes, mime_type: str = "image/jpeg") -> dict:
+    """
+    Analyze a complaint photo using Gemini's native vision capability.
+
+    Args:
+        image_bytes: Raw image bytes (JPEG, PNG, WEBP all supported)
+        mime_type:   The MIME type of the uploaded image
+
+    Returns:
+        dict with keys:
+            description     – 2-3 sentence factual description for a government officer
+            category_hint   – Suggested complaint category
+            severity_hint   – High / Medium / Low
+            visible_details – Comma-separated list of specific visible evidence
+    """
+    client = get_client()
+
+    prompt = """You are Naayak, an AI grievance assistant for Delhi citizens.
+A citizen has uploaded a photo to support their civic complaint.
+
+Analyze this image carefully and return ONLY a valid JSON object with exactly
+these fields and nothing else. No explanation, no markdown, no backticks:
+
+{
+  "description": "A clear, factual 2-3 sentence description of the civic problem visible in the image. Write as if describing the issue to a government officer. Be specific about what you see.",
+  "category_hint": "One of: Water, Electricity, Roads, Health, Education, Sanitation, Police, Ration, Land, Pension, or Unknown",
+  "severity_hint": "High, Medium, or Low — based on visual severity of the problem",
+  "visible_details": "Comma-separated list of specific things visible that are relevant to the complaint (e.g. standing water, broken road surface, overflowing garbage, damaged wire)"
+}
+
+If the image does not show a civic issue (e.g. selfie, random object, blank),
+still return valid JSON with description explaining what you see and
+category_hint as "Unknown"."""
+
+    image_part = types.Part.from_bytes(
+        data=image_bytes,
+        mime_type=mime_type
+    )
+
+    response = client.models.generate_content(
+        model="gemini-2.5-flash",
+        contents=[
+            types.Content(
+                role="user",
+                parts=[
+                    image_part,
+                    types.Part.from_text(text=prompt)
+                ]
+            )
+        ]
+    )
+
+    raw = response.text.strip()
+    # Strip markdown fences if Gemini wraps in ```json
+    if raw.startswith("```"):
+        raw = raw.split("```")[1]
+        if raw.startswith("json"):
+            raw = raw[4:]
+    raw = raw.strip()
+    return json.loads(raw)
+
+
+# ─── Existing functions (unchanged) ──────────────────────────────────────────
 
 def analyze_complaint(complaint_text: str, language: str = "Hindi") -> dict:
     knowledge_base = load_knowledge_base()

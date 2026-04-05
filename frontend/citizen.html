@@ -8,6 +8,183 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
+    <style>
+        /* ── Photo upload zone ─────────────────────────────────── */
+        .photo-upload-zone {
+            border: 2px dashed #c8d8d0;
+            border-radius: 12px;
+            padding: 20px 16px;
+            text-align: center;
+            cursor: pointer;
+            transition: border-color 0.2s, background 0.2s;
+            background: #f7fbf9;
+            position: relative;
+        }
+        .photo-upload-zone:hover {
+            border-color: #1D9E75;
+            background: #edf7f3;
+        }
+        .photo-upload-zone input[type="file"] {
+            position: absolute;
+            inset: 0;
+            opacity: 0;
+            cursor: pointer;
+            width: 100%;
+            height: 100%;
+        }
+        .photo-upload-icon {
+            font-size: 28px;
+            margin-bottom: 6px;
+        }
+        .photo-upload-zone p {
+            margin: 0;
+            font-size: 13px;
+            color: #6b8a80;
+            line-height: 1.5;
+        }
+        .photo-upload-zone strong {
+            display: block;
+            font-size: 14px;
+            color: #1D9E75;
+            margin-bottom: 4px;
+        }
+
+        /* ── Image preview ─────────────────────────────────────── */
+        #imagePreviewWrapper {
+            display: none;
+            margin-top: 12px;
+            border-radius: 10px;
+            overflow: hidden;
+            position: relative;
+        }
+        #imagePreviewWrapper img {
+            width: 100%;
+            max-height: 200px;
+            object-fit: cover;
+            display: block;
+            border-radius: 10px;
+        }
+        .image-remove-btn {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background: rgba(0,0,0,0.55);
+            color: #fff;
+            border: none;
+            border-radius: 50%;
+            width: 28px;
+            height: 28px;
+            font-size: 16px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            line-height: 1;
+        }
+
+        /* ── AI image analysis result panel ───────────────────── */
+        #imageAnalysisPanel {
+            display: none;
+            margin-top: 12px;
+            border-radius: 10px;
+            border: 1px solid #b8ddd0;
+            background: #edf7f3;
+            padding: 14px 16px;
+        }
+        #imageAnalysisPanel .panel-label {
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.07em;
+            text-transform: uppercase;
+            color: #1D9E75;
+            margin-bottom: 6px;
+        }
+        #imageAnalysisPanel .ai-description {
+            font-size: 14px;
+            color: #1a3a2e;
+            line-height: 1.6;
+            margin: 0 0 8px;
+        }
+        #imageAnalysisPanel .ai-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+        #imageAnalysisPanel .ai-tag {
+            background: #fff;
+            border: 1px solid #b8ddd0;
+            color: #176B53;
+            font-size: 11px;
+            font-weight: 600;
+            padding: 3px 8px;
+            border-radius: 99px;
+        }
+        #imageAnalyzing {
+            display: none;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 0 4px;
+            font-size: 13px;
+            color: #6b8a80;
+        }
+        #imageAnalyzing .mini-spinner {
+            width: 16px;
+            height: 16px;
+            border: 2px solid #c8d8d0;
+            border-top-color: #1D9E75;
+            border-radius: 50%;
+            animation: spin 0.7s linear infinite;
+            flex-shrink: 0;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* ── GPS location row ──────────────────────────────────── */
+        .location-row {
+            display: flex;
+            gap: 8px;
+            align-items: stretch;
+        }
+        .location-row input {
+            flex: 1;
+            min-width: 0;
+        }
+        .gps-btn {
+            flex-shrink: 0;
+            padding: 0 14px;
+            background: #1D9E75;
+            color: #fff;
+            border: none;
+            border-radius: 10px;
+            font-size: 18px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.18s, transform 0.12s;
+            min-height: 44px;
+        }
+        .gps-btn:hover { background: #178a63; }
+        .gps-btn:active { transform: scale(0.94); }
+        .gps-btn:disabled { background: #a0c8b8; cursor: not-allowed; }
+        .gps-btn svg {
+            width: 20px;
+            height: 20px;
+            fill: none;
+            stroke: currentColor;
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+        #gpsStatus {
+            font-size: 11px;
+            color: #6b8a80;
+            margin-top: 4px;
+            min-height: 16px;
+            transition: color 0.2s;
+        }
+        #gpsStatus.gps-ok  { color: #1D9E75; font-weight: 600; }
+        #gpsStatus.gps-err { color: #E8593C; }
+    </style>
 </head>
 <body>
     <main class="app-shell">
@@ -46,31 +223,19 @@
                 <div class="flow-stepper" aria-label="Citizen progress">
                     <div class="flow-step is-complete">
                         <span class="flow-step-index">1</span>
-                        <div>
-                            <strong>Login</strong>
-                            <span>Verified access</span>
-                        </div>
+                        <div><strong>Login</strong><span>Verified access</span></div>
                     </div>
                     <div class="flow-step is-current">
                         <span class="flow-step-index">2</span>
-                        <div>
-                            <strong>File</strong>
-                            <span>Describe your issue</span>
-                        </div>
+                        <div><strong>File</strong><span>Describe your issue</span></div>
                     </div>
                     <div class="flow-step">
                         <span class="flow-step-index">3</span>
-                        <div>
-                            <strong>Review</strong>
-                            <span>Confirm routing</span>
-                        </div>
+                        <div><strong>Review</strong><span>Confirm routing</span></div>
                     </div>
                     <div class="flow-step">
                         <span class="flow-step-index">4</span>
-                        <div>
-                            <strong>Track</strong>
-                            <span>Watch progress</span>
-                        </div>
+                        <div><strong>Track</strong><span>Watch progress</span></div>
                     </div>
                 </div>
 
@@ -85,8 +250,26 @@
                 </div>
                 <input type="hidden" id="complaintCategory" value="Roads">
 
+                <!-- ── Location with GPS auto-detect ── -->
                 <label class="field-label" for="location">Location</label>
-                <input type="text" id="location" placeholder="Ward, area or landmark">
+                <div class="location-row">
+                    <input type="text" id="location" placeholder="Ward, area or landmark">
+                    <button
+                        type="button"
+                        class="gps-btn"
+                        id="gpsBtn"
+                        title="Detect my location automatically"
+                        onclick="detectGPSLocation()"
+                        aria-label="Auto-detect location using GPS"
+                    >
+                        <!-- Location pin SVG -->
+                        <svg viewBox="0 0 24 24">
+                            <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7Z"/>
+                            <circle cx="12" cy="9" r="2.5"/>
+                        </svg>
+                    </button>
+                </div>
+                <p id="gpsStatus"></p>
 
                 <label class="field-label" for="language">Complaint language</label>
                 <select id="language">
@@ -101,7 +284,42 @@
                 <label class="field-label" for="complaintText">Complaint details</label>
                 <textarea id="complaintText" placeholder="Example: Streetlight has not worked for 5 days near the primary school, making the road unsafe at night."></textarea>
 
-                <div class="action-stack">
+                <!-- ── Photo upload ── -->
+                <label class="field-label" style="margin-top:16px;">Photo evidence (optional)</label>
+                <div class="photo-upload-zone" id="photoUploadZone">
+                    <input
+                        type="file"
+                        id="photoInput"
+                        accept="image/jpeg,image/png,image/webp"
+                        capture="environment"
+                        onchange="handlePhotoSelected(this)"
+                        aria-label="Upload complaint photo"
+                    >
+                    <div class="photo-upload-icon">📷</div>
+                    <strong>Tap to take photo or upload</strong>
+                    <p>JPEG, PNG or WEBP · Max 5 MB<br>AI will describe the problem automatically</p>
+                </div>
+
+                <!-- Image preview with remove button -->
+                <div id="imagePreviewWrapper">
+                    <img id="imagePreview" src="" alt="Complaint photo preview">
+                    <button class="image-remove-btn" onclick="removePhoto()" title="Remove photo" aria-label="Remove uploaded photo">✕</button>
+                </div>
+
+                <!-- Spinner shown while Gemini analyses image -->
+                <div id="imageAnalyzing">
+                    <div class="mini-spinner"></div>
+                    <span>AI is analysing your photo…</span>
+                </div>
+
+                <!-- AI result panel shown after analysis -->
+                <div id="imageAnalysisPanel" role="region" aria-live="polite" aria-label="AI image analysis result">
+                    <div class="panel-label">📸 AI sees in your photo</div>
+                    <p class="ai-description" id="aiImageDescription"></p>
+                    <div class="ai-tags" id="aiImageTags"></div>
+                </div>
+
+                <div class="action-stack" style="margin-top:20px;">
                     <button class="btn btn-secondary" type="button" onclick="startVoiceMock()">Use voice input</button>
                     <button class="btn btn-primary" type="button" onclick="submitComplaint()">Analyze and Submit</button>
                 </div>

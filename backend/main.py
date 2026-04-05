@@ -1,11 +1,11 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, UploadFile, File
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import Optional
 import random
 import string
 from datetime import datetime
-from ai_engine import analyze_complaint, generate_email
+from ai_engine import analyze_complaint, generate_email, analyze_image
 from email_sender import send_grievance_email, send_bulk_grievance_email
 from duplicate_checker import check_duplicate
 
@@ -141,6 +141,60 @@ def verify_otp(request: OTPRequest):
     raise HTTPException(status_code=400, detail="Invalid OTP. Please try again.")
 
 
+# ─── NEW: Image Analysis Endpoint ─────────────────────────────────────────────
+
+@app.post("/analyze-image")
+async def analyze_image_endpoint(file: UploadFile = File(...)):
+    """
+    Accept a photo upload and return an AI-generated description of the
+    civic problem visible in the image.
+
+    Supported formats: JPEG, PNG, WEBP
+    Max recommended size: 5 MB (Gemini handles larger but latency increases)
+
+    Returns:
+        {
+            "success": true,
+            "description": "...",
+            "category_hint": "Roads",
+            "severity_hint": "High",
+            "visible_details": "pothole, cracked surface, standing water"
+        }
+    """
+    # Validate content type
+    allowed_types = {"image/jpeg", "image/jpg", "image/png", "image/webp"}
+    content_type = file.content_type or "image/jpeg"
+    if content_type not in allowed_types:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Unsupported image type: {content_type}. Use JPEG, PNG, or WEBP."
+        )
+
+    try:
+        image_bytes = await file.read()
+
+        # Guard against empty uploads
+        if len(image_bytes) == 0:
+            raise HTTPException(status_code=400, detail="Uploaded file is empty.")
+
+        result = analyze_image(image_bytes, mime_type=content_type)
+
+        return {
+            "success": True,
+            "description": result.get("description", ""),
+            "category_hint": result.get("category_hint", "Unknown"),
+            "severity_hint": result.get("severity_hint", "Medium"),
+            "visible_details": result.get("visible_details", "")
+        }
+
+    except json.JSONDecodeError:
+        raise HTTPException(status_code=500, detail="AI returned an unexpected response format.")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Image analysis failed: {str(e)}")
+
+
+# ─── Existing endpoints (unchanged) ──────────────────────────────────────────
+
 @app.post("/analyze")
 def analyze(request: ComplaintRequest):
     if not request.text.strip():
@@ -254,7 +308,6 @@ def send_email(request: EmailRequest):
 
 @app.post("/send-rti")
 def send_rti(request: RTIRequest):
-    """Send RTI notice — best-effort, never raises to the client."""
     try:
         complaint_data = {
             "department": request.department,
@@ -318,7 +371,6 @@ def get_all_complaints():
             "location": data.get("location", ""),
             "original_text": data["original_text"],
             "bulk_count": data.get("bulk_count", 1),
-            # Full objects so the bulk re-hydration flow works in script.js
             "analysis": analysis,
             "email_body": data.get("email_body", "")
         })
