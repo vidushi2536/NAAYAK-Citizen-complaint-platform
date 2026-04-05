@@ -1,0 +1,12 @@
+﻿.env
+__pycache__/
+*.pyc
+*.zip
+.replit
+replit.md
+.agents/
+.upm/
+.config/
+backend/data/screenshots/
+backend/.postman/
+backend/postman/
