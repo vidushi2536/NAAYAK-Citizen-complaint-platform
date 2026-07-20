@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Naayak | Choose Language</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #f0faf5 0%, #e8f5ef 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Manrope', sans-serif;
+            padding: 24px;
+        }
+
+        .brand {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .brand-name {
+            font-size: 42px;
+            font-weight: 800;
+            color: #1D9E75;
+            letter-spacing: -1px;
+        }
+
+        .brand-tagline {
+            font-size: 15px;
+            color: #6b8a80;
+            margin-top: 6px;
+        }
+
+        .prompt {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1a3329;
+            text-align: center;
+            margin-bottom: 28px;
+        }
+
+        .lang-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 16px;
+            width: 100%;
+            max-width: 600px;
+        }
+
+        .lang-btn {
+            background: #fff;
+            border: 2px solid #c8ddd5;
+            border-radius: 16px;
+            padding: 24px 16px;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.2s;
+            text-decoration: none;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .lang-btn:hover {
+            border-color: #1D9E75;
+            background: #edf7f3;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(29,158,117,0.15);
+        }
+
+        .lang-native {
+            font-size: 26px;
+            font-weight: 700;
+            color: #1D9E75;
+            line-height: 1.2;
+        }
+
+        .lang-english {
+            font-size: 13px;
+            color: #6b8a80;
+            font-weight: 500;
+        }
+
+        .footer-note {
+            margin-top: 36px;
+            font-size: 12px;
+            color: #9bb5ae;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="brand">
+        <div class="brand-name">Naayak</div>
+        <div class="brand-tagline">AI Citizen Grievance Platform · Delhi</div>
+    </div>
+
+    <p class="prompt">अपनी भाषा चुनें · Choose your language</p>
+
+    <div class="lang-grid">
+        <button class="lang-btn" onclick="selectLang('Hindi')">
+            <span class="lang-native">हिंदी</span>
+            <span class="lang-english">Hindi</span>
+        </button>
+        <button class="lang-btn" onclick="selectLang('English')">
+            <span class="lang-native">English</span>
+            <span class="lang-english">English</span>
+        </button>
+        <button class="lang-btn" onclick="selectLang('Punjabi')">
+            <span class="lang-native">ਪੰਜਾਬੀ</span>
+            <span class="lang-english">Punjabi</span>
+        </button>
+        <button class="lang-btn" onclick="selectLang('Bengali')">
+            <span class="lang-native">বাংলা</span>
+            <span class="lang-english">Bengali</span>
+        </button>
+        <button class="lang-btn" onclick="selectLang('Marathi')">
+            <span class="lang-native">मराठी</span>
+            <span class="lang-english">Marathi</span>
+        </button>
+        <button class="lang-btn" onclick="selectLang('Tamil')">
+            <span class="lang-native">தமிழ்</span>
+            <span class="lang-english">Tamil</span>
+        </button>
+        <button class="lang-btn" onclick="selectLang('Telugu')">
+            <span class="lang-native">తెలుగు</span>
+            <span class="lang-english">Telugu</span>
+        </button>
+    </div>
+
+    <p class="footer-note">आप बाद में भाषा बदल सकते हैं · You can change language later</p>
+
+    <script>
+        function selectLang(lang) {
+            localStorage.setItem('naayak_lang', lang);
+            window.location.href = 'index.html';
+        }
+
+        // If language already selected, skip this page
+        if (localStorage.getItem('naayak_lang')) {
+            window.location.href = 'index.html';
+        }
+    </script>
+
+</body>
+</html>

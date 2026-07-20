@@ -13,32 +13,32 @@
     <main class="app-shell">
         <div class="mobile-frame">
             <header class="top-header">
-                <p class="top-header-kicker">Civic Tech Platform</p>
+                <p class="top-header-kicker" data-i18n="kicker_civic_tech">Civic Tech Platform</p>
                 <h1 class="brand-title">Naayak</h1>
-                <p class="brand-subtitle">Your voice to the government</p>
+                <p class="brand-subtitle" data-i18n="subtitle_voice">Your voice to the government</p>
             </header>
 
             <section class="hero-card">
-                <div class="eyebrow">Role Access</div>
+                <div class="eyebrow" data-i18n="eyebrow_role_access">Role Access</div>
                 <div class="hero-row">
                     <div>
-                        <h2>One platform for citizens, officers, and administrators</h2>
-                        <p>Use the role selector below to enter the correct workflow for complaint filing, department action, or platform oversight.</p>
+                        <h2 data-i18n="hero_heading">One platform for citizens, officers, and administrators</h2>
+                        <p data-i18n="hero_desc">Use the role selector below to enter the correct workflow for complaint filing, department action, or platform oversight.</p>
                     </div>
                     <div class="seal-mark">Gov</div>
                 </div>
                 <div class="hero-badges">
-                    <span class="badge badge-green">Citizen Filing</span>
-                    <span class="badge badge-yellow">Officer Action</span>
-                    <span class="badge badge-red">Admin Control</span>
+                    <span class="badge badge-green" data-i18n="badge_citizen_filing">Citizen Filing</span>
+                    <span class="badge badge-yellow" data-i18n="badge_officer_action">Officer Action</span>
+                    <span class="badge badge-red" data-i18n="badge_admin_control">Admin Control</span>
                 </div>
             </section>
 
             <section class="card section-card">
                 <div class="section-head">
                     <div>
-                        <p class="section-kicker">Login Portal</p>
-                        <h2>Select your role</h2>
+                        <p class="section-kicker" data-i18n="login_portal">Login Portal</p>
+                        <h2 data-i18n="select_role">Select your role</h2>
                     </div>
                 </div>
 
@@ -50,8 +50,8 @@
                                 <path d="M5 20a7 7 0 0 1 14 0" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
                             </svg>
                         </span>
-                        <strong>Citizen</strong>
-                        <span class="role-copy">Phone + OTP login</span>
+                        <strong data-i18n="role_citizen">Citizen</strong>
+                        <span class="role-copy" data-i18n="role_citizen_desc">Phone + OTP login</span>
                     </button>
                     <button type="button" id="adhikariRoleBtn" class="role-card" onclick="selectRole('adhikari')">
                         <span class="role-icon" aria-hidden="true">
@@ -61,8 +61,8 @@
                                 <path d="M9 11h.01M15 11h.01M9 15h.01M15 15h.01" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/>
                             </svg>
                         </span>
-                        <strong>Adhikari</strong>
-                        <span class="role-copy">Department officer access</span>
+                        <strong data-i18n="role_adhikari">Adhikari</strong>
+                        <span class="role-copy" data-i18n="role_adhikari_desc">Department officer access</span>
                     </button>
                     <button type="button" id="adminRoleBtn" class="role-card" onclick="selectRole('admin')">
                         <span class="role-icon" aria-hidden="true">
@@ -71,8 +71,8 @@
                                 <path d="M19.4 15a1 1 0 0 0 .2 1.1l.05.05a1.25 1.25 0 0 1 0 1.77l-1.27 1.27a1.25 1.25 0 0 1-1.77 0l-.05-.05a1 1 0 0 0-1.1-.2 1 1 0 0 0-.6.92V20a1.25 1.25 0 0 1-1.25 1.25h-1.8A1.25 1.25 0 0 1 10.56 20v-.08a1 1 0 0 0-.6-.92 1 1 0 0 0-1.1.2l-.05.05a1.25 1.25 0 0 1-1.77 0l-1.27-1.27a1.25 1.25 0 0 1 0-1.77l.05-.05a1 1 0 0 0 .2-1.1 1 1 0 0 0-.92-.6H5a1.25 1.25 0 0 1-1.25-1.25v-1.8A1.25 1.25 0 0 1 5 10.11h.08a1 1 0 0 0 .92-.6 1 1 0 0 0-.2-1.1l-.05-.05a1.25 1.25 0 0 1 0-1.77l1.27-1.27a1.25 1.25 0 0 1 1.77 0l.05.05a1 1 0 0 0 1.1.2h.02a1 1 0 0 0 .58-.92V4a1.25 1.25 0 0 1 1.25-1.25h1.8A1.25 1.25 0 0 1 14.81 4v.08a1 1 0 0 0 .6.92 1 1 0 0 0 1.1-.2l.05-.05a1.25 1.25 0 0 1 1.77 0l1.27 1.27a1.25 1.25 0 0 1 0 1.77l-.05.05a1 1 0 0 0-.2 1.1v.02a1 1 0 0 0 .92.58H20a1.25 1.25 0 0 1 1.25 1.25v1.8A1.25 1.25 0 0 1 20 14.81h-.08a1 1 0 0 0-.92.6Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
                             </svg>
                         </span>
-                        <strong>Admin</strong>
-                        <span class="role-copy">Platform analytics and management</span>
+                        <strong data-i18n="role_admin">Admin</strong>
+                        <span class="role-copy" data-i18n="role_admin_desc">Platform analytics and management</span>
                     </button>
                 </div>
             </section>
@@ -80,70 +80,70 @@
             <section id="citizenLogin" class="card section-card screen-panel active-screen">
                 <div class="section-head">
                     <div>
-                        <p class="section-kicker">Citizen Login</p>
-                        <h2>Verify with mobile OTP</h2>
+                        <p class="section-kicker" data-i18n="citizen_login_kicker">Citizen Login</p>
+                        <h2 data-i18n="citizen_login_heading">Verify with mobile OTP</h2>
                     </div>
-                    <span class="section-tag">Role 1</span>
+                    <span class="section-tag" data-i18n="role_tag_1">Role 1</span>
                 </div>
 
-                <label class="field-label" for="citizenPhone">Mobile number</label>
-                <input type="tel" id="citizenPhone" placeholder="Enter 10 digit mobile number" maxlength="10">
+                <label class="field-label" for="citizenPhone" data-i18n="label_mobile">Mobile number</label>
+                <input type="tel" id="citizenPhone" placeholder="Enter 10 digit mobile number" data-i18n-placeholder="placeholder_mobile" maxlength="10">
 
-                <button class="btn btn-primary" type="button" onclick="sendCitizenOTP()">Send OTP</button>
+                <button class="btn btn-primary" type="button" onclick="sendCitizenOTP()" data-i18n="btn_send_otp">Send OTP</button>
 
                 <div id="citizenOtpBox" class="otp-panel hidden">
-                    <label class="field-label" for="citizenOtp">Verification code</label>
-                    <input type="text" id="citizenOtp" placeholder="Use 123456 for demo" maxlength="6">
-                    <button class="btn btn-primary" type="button" onclick="loginCitizen()">Continue as Citizen</button>
+                    <label class="field-label" for="citizenOtp" data-i18n="label_verification_code">Verification code</label>
+                    <input type="text" id="citizenOtp" placeholder="Use 123456 for demo" data-i18n-placeholder="placeholder_otp" maxlength="6">
+                    <button class="btn btn-primary" type="button" onclick="loginCitizen()" data-i18n="btn_continue_citizen">Continue as Citizen</button>
                 </div>
             </section>
 
             <section id="adhikariLogin" class="card section-card screen-panel hidden">
                 <div class="section-head">
                     <div>
-                        <p class="section-kicker">Adhikari Login</p>
-                        <h2>Department officer access</h2>
+                        <p class="section-kicker" data-i18n="adhikari_login_kicker">Adhikari Login</p>
+                        <h2 data-i18n="adhikari_login_heading">Department officer access</h2>
                     </div>
-                    <span class="section-tag">Role 2</span>
+                    <span class="section-tag" data-i18n="role_tag_2">Role 2</span>
                 </div>
 
                 <div class="credential-card">
-                    <strong>Demo credentials</strong>
+                    <strong data-i18n="demo_credentials">Demo credentials</strong>
                     <p>Email: `roads.officer@gov.in`</p>
                     <p>Password: `adhikari123`</p>
                 </div>
 
-                <label class="field-label" for="adhikariEmail">Official email</label>
-                <input type="email" id="adhikariEmail" placeholder="Enter officer email">
+                <label class="field-label" for="adhikariEmail" data-i18n="label_official_email">Official email</label>
+                <input type="email" id="adhikariEmail" placeholder="Enter officer email" data-i18n-placeholder="placeholder_officer_email">
 
-                <label class="field-label" for="adhikariPassword">Password</label>
-                <input type="password" id="adhikariPassword" placeholder="Enter password">
+                <label class="field-label" for="adhikariPassword" data-i18n="label_password">Password</label>
+                <input type="password" id="adhikariPassword" placeholder="Enter password" data-i18n-placeholder="placeholder_password">
 
-                <button class="btn btn-primary" type="button" onclick="loginAdhikari()">Continue as Adhikari</button>
+                <button class="btn btn-primary" type="button" onclick="loginAdhikari()" data-i18n="btn_continue_adhikari">Continue as Adhikari</button>
             </section>
 
             <section id="adminLogin" class="card section-card screen-panel hidden">
                 <div class="section-head">
                     <div>
-                        <p class="section-kicker">Admin Login</p>
-                        <h2>Platform administration access</h2>
+                        <p class="section-kicker" data-i18n="admin_login_kicker">Admin Login</p>
+                        <h2 data-i18n="admin_login_heading">Platform administration access</h2>
                     </div>
-                    <span class="section-tag">Role 3</span>
+                    <span class="section-tag" data-i18n="role_tag_3">Role 3</span>
                 </div>
 
                 <div class="credential-card">
-                    <strong>Demo credentials</strong>
+                    <strong data-i18n="demo_credentials">Demo credentials</strong>
                     <p>Email: `admin@naayak.gov.in`</p>
                     <p>Password: `admin123`</p>
                 </div>
 
-                <label class="field-label" for="adminEmail">Admin email</label>
-                <input type="email" id="adminEmail" placeholder="Enter admin email">
+                <label class="field-label" for="adminEmail" data-i18n="label_admin_email">Admin email</label>
+                <input type="email" id="adminEmail" placeholder="Enter admin email" data-i18n-placeholder="placeholder_admin_email">
 
-                <label class="field-label" for="adminPassword">Password</label>
-                <input type="password" id="adminPassword" placeholder="Enter password">
+                <label class="field-label" for="adminPassword" data-i18n="label_password">Password</label>
+                <input type="password" id="adminPassword" placeholder="Enter password" data-i18n-placeholder="placeholder_password">
 
-                <button class="btn btn-primary" type="button" onclick="loginAdmin()">Continue as Admin</button>
+                <button class="btn btn-primary" type="button" onclick="loginAdmin()" data-i18n="btn_continue_admin">Continue as Admin</button>
             </section>
         </div>
     </main>
